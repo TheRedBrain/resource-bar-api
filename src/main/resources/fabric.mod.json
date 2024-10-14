@@ -1,41 +1,36 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "resourcebarapi",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Resource Bar API",
+	"description": "Overhauls the damage calculations and adds elemental damage.",
 	"authors": [
-		"Me!"
+		"TheRedBrain"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/TheRedBrain/overhauled-damage"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"license": "MIT",
+	"icon": "assets/resourcebarapi/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.github.theredbrain.resourcebarapi.ResourceBarAPI"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.github.theredbrain.resourcebarapi.ResourceBarAPIClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"resourcebarapi.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "resourcebarapi.client.mixins.json",
 			"environment": "client"
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.16.2",
-		"minecraft": "~1.21.1",
-		"java": ">=21",
+		"minecraft": "${minecraft_version}",
+		"fabricloader": ">=${loader_version}",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
