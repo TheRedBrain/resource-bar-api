@@ -16,7 +16,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 	}
-	
+
+	// TODO copy the updated method from Stamina Attributes
 	public static void drawResourceBar(
 			MinecraftClient client,
 			TextRenderer textRenderer,
