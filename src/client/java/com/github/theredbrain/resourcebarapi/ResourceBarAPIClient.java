@@ -6,6 +6,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,20 +18,22 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	public void onInitializeClient() {
 	}
 
-	// TODO copy the updated method from Stamina Attributes
 	public static void drawResourceBar(
 			MinecraftClient client,
 			TextRenderer textRenderer,
 			DrawContext context,
 			String identifier_string,
+			int[] cached_values_default,
 			int current_value,
 			int max_value,
 			int current_value_reduction,
-			ResourceBarAPI.ResourceBarOrigin resource_bar_origin,
+			int current_value_reservation,
+			ResourceBarOrigin resource_bar_origin,
 			int element_offset_x,
 			int element_offset_y,
+			boolean is_centered,
 			Identifier[] texture_ids,
-			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
+			ResourceBarFillDirection resource_bar_fill_direction,
 			int background_additional_middle_segment_amount,
 			int horizontal_background_left_end_width,
 			int horizontal_background_middle_segment_width,
@@ -51,6 +54,17 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int vertical_progress_top_end_height,
 			int vertical_progress_middle_segment_height,
 			int vertical_progress_bottom_end_height,
+			int reserved_offset_x,
+			int reserved_offset_y,
+			int reserved_additional_middle_segment_amount,
+			int horizontal_reserved_left_end_width,
+			int horizontal_reserved_middle_segment_width,
+			int horizontal_reserved_right_end_width,
+			int horizontal_reserved_height,
+			int vertical_reserved_width,
+			int vertical_reserved_top_end_height,
+			int vertical_reserved_middle_segment_height,
+			int vertical_reserved_bottom_end_height,
 			boolean show_current_value_overlay,
 			int overlay_offset_x,
 			int overlay_offset_y,
@@ -68,37 +82,39 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int resource_bar_number_color
 	) {
 
+		if (texture_ids.length != 38) {
+			ResourceBarAPI.LOGGER.info("wrong texture id array length, needs to be 32, is: " + texture_ids.length);
+			return;
+		}
+
 		int progressBarLength;
-		int backgroundTextureHeight;
-		int backgroundTextureWidth;
-		int backgroundMiddleSectionLength;
-		int progressTextureHeight;
-		int progressTextureWidth;
+		int reservedBarLength;
 		int progressMiddleSectionLength;
+		int reservedMiddleSectionLength;
 		int originX;
 		int originY;
-		if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.TOP_MIDDLE) {
+		if (resource_bar_origin == ResourceBarOrigin.TOP_MIDDLE) {
 			originX = context.getScaledWindowWidth() / 2;
 			originY = 0;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.TOP_RIGHT) {
+		} else if (resource_bar_origin == ResourceBarOrigin.TOP_RIGHT) {
 			originX = context.getScaledWindowWidth();
 			originY = 0;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_LEFT) {
+		} else if (resource_bar_origin == ResourceBarOrigin.MIDDLE_LEFT) {
 			originX = 0;
 			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_MIDDLE) {
+		} else if (resource_bar_origin == ResourceBarOrigin.MIDDLE_MIDDLE) {
 			originX = context.getScaledWindowWidth() / 2;
 			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_RIGHT) {
+		} else if (resource_bar_origin == ResourceBarOrigin.MIDDLE_RIGHT) {
 			originX = context.getScaledWindowWidth();
 			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_LEFT) {
+		} else if (resource_bar_origin == ResourceBarOrigin.BOTTOM_LEFT) {
 			originX = 0;
 			originY = context.getScaledWindowHeight();
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_MIDDLE) {
+		} else if (resource_bar_origin == ResourceBarOrigin.BOTTOM_MIDDLE) {
 			originX = context.getScaledWindowWidth() / 2;
 			originY = context.getScaledWindowHeight();
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_RIGHT) {
+		} else if (resource_bar_origin == ResourceBarOrigin.BOTTOM_RIGHT) {
 			originX = context.getScaledWindowWidth();
 			originY = context.getScaledWindowHeight();
 		} else {
@@ -109,232 +125,525 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		int elementY = originY + element_offset_y;
 
 		// region variable calculation
-		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
-			backgroundTextureHeight = vertical_background_top_end_height + vertical_background_middle_segment_height + vertical_background_bottom_end_height;
-			backgroundTextureWidth = vertical_background_width;
-			progressTextureHeight = vertical_progress_top_end_height + vertical_progress_middle_segment_height + vertical_progress_bottom_end_height;
-			progressTextureWidth = vertical_progress_width;
-			backgroundMiddleSectionLength = background_additional_middle_segment_amount * vertical_background_middle_segment_height;
+		if (resource_bar_fill_direction == ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			progressMiddleSectionLength = progress_additional_middle_segment_amount * vertical_progress_middle_segment_height;
+			reservedMiddleSectionLength = progress_additional_middle_segment_amount * vertical_progress_middle_segment_height;
 			progressBarLength = vertical_progress_top_end_height + progressMiddleSectionLength + vertical_progress_bottom_end_height;
+			reservedBarLength = vertical_reserved_top_end_height + reservedMiddleSectionLength + vertical_reserved_bottom_end_height;
 		} else {
-			backgroundTextureHeight = horizontal_background_height;
-			backgroundTextureWidth = horizontal_background_left_end_width + horizontal_background_middle_segment_width + horizontal_background_right_end_width;
-			progressTextureHeight = horizontal_progress_height;
-			progressTextureWidth = horizontal_progress_left_end_width + horizontal_progress_middle_segment_width + horizontal_progress_right_end_width;
-			backgroundMiddleSectionLength = background_additional_middle_segment_amount * horizontal_background_middle_segment_width;
 			progressMiddleSectionLength = progress_additional_middle_segment_amount * horizontal_progress_middle_segment_width;
+			reservedMiddleSectionLength = reserved_additional_middle_segment_amount * horizontal_reserved_middle_segment_width;
 			progressBarLength = horizontal_progress_left_end_width + progressMiddleSectionLength + horizontal_progress_right_end_width;
+			reservedBarLength = horizontal_reserved_left_end_width + reservedMiddleSectionLength + horizontal_reserved_right_end_width;
 		}
 		// endregion variable calculation
 
 		int normalizedResourceRatio = (int) (((double) current_value / Math.max(max_value, 1)) * (progressBarLength));
+		int normalizedReservedResourceRatio = (int) (((double) current_value_reservation / Math.max(max_value, 1)) * (reservedBarLength));
 
-		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, new int[]{-1, -1, 0});
+		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
 
 		int oldMaxBuildUp = cachedValues[0];
-		int oldNormalizedBuildUpRatio = cachedValues[1];
-		int buildUpBarAnimationCounter = cachedValues[2];
+		int oldNormalizedResourceRatio = cachedValues[1];
+		int resourceBarAnimationCounter = cachedValues[2];
 
 		if (oldMaxBuildUp != max_value) {
 			oldMaxBuildUp = max_value;
 			if (!max_value_change_is_animated) {
-				oldNormalizedBuildUpRatio = normalizedResourceRatio;
+				oldNormalizedResourceRatio = normalizedResourceRatio;
 			}
 		}
 
-		buildUpBarAnimationCounter = buildUpBarAnimationCounter + Math.max(1, current_value_reduction);
-
-		if (oldNormalizedBuildUpRatio != normalizedResourceRatio && buildUpBarAnimationCounter > Math.max(0, animation_interval)) {
-			boolean reduceOldRatio = oldNormalizedBuildUpRatio > normalizedResourceRatio;
-			oldNormalizedBuildUpRatio = oldNormalizedBuildUpRatio + (reduceOldRatio ? -1 : 1);
-			buildUpBarAnimationCounter = 0;
+		resourceBarAnimationCounter = resourceBarAnimationCounter + Math.max(1, current_value_reduction);
+		boolean reduceOldRatio = oldNormalizedResourceRatio > normalizedResourceRatio;
+		if (oldNormalizedResourceRatio != normalizedResourceRatio && resourceBarAnimationCounter > Math.max(0, animation_interval)) {
+			oldNormalizedResourceRatio = oldNormalizedResourceRatio + (reduceOldRatio ? -1 : 1);
+			resourceBarAnimationCounter = 0;
 		}
 
-		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new int[]{oldMaxBuildUp, oldNormalizedBuildUpRatio, buildUpBarAnimationCounter});
+		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new int[]{oldMaxBuildUp, oldNormalizedResourceRatio, resourceBarAnimationCounter});
 
 		client.getProfiler().push(identifier_string + "_bar");
 
 		// background
-		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
-			context.drawTexture(texture_ids[3], elementX, elementY, 0, 0, backgroundTextureWidth, vertical_background_top_end_height, backgroundTextureWidth, backgroundTextureHeight);
-			if (background_additional_middle_segment_amount > 0) {
-				for (int i = 0; i < background_additional_middle_segment_amount; i++) {
-					context.drawTexture(texture_ids[3], elementX, elementY + vertical_background_top_end_height + (i * vertical_background_middle_segment_height), 0, vertical_background_top_end_height, backgroundTextureWidth, vertical_background_middle_segment_height, backgroundTextureWidth, backgroundTextureHeight);
+		drawStaticTwoDirectionalLayer(
+				context,
+				Arrays.copyOfRange(texture_ids, 0, 5),
+				resource_bar_fill_direction,
+				elementX,
+				elementY,
+				is_centered,
+				background_additional_middle_segment_amount,
+				horizontal_background_left_end_width,
+				horizontal_background_middle_segment_width,
+				horizontal_background_right_end_width,
+				horizontal_background_height,
+				vertical_background_width,
+				vertical_background_top_end_height,
+				vertical_background_middle_segment_height,
+				vertical_background_bottom_end_height
+		);
+
+		int progressElementX = elementX + progress_offset_x;
+		int progressElementY = elementY + progress_offset_y;
+		if (enable_smooth_animation) {
+			if (reduceOldRatio) {
+
+				// animation layer
+				if (oldNormalizedResourceRatio > 0) {
+					drawResourceBarFourDirectionalLayer(
+							context,
+							Arrays.copyOfRange(texture_ids, 12, 17),
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							is_centered,
+							progress_additional_middle_segment_amount,
+							horizontal_progress_left_end_width,
+							horizontal_progress_middle_segment_width,
+							horizontal_progress_right_end_width,
+							horizontal_progress_height,
+							vertical_progress_width,
+							vertical_progress_top_end_height,
+							vertical_progress_middle_segment_height,
+							vertical_progress_bottom_end_height,
+							oldNormalizedResourceRatio
+					);
+				}
+
+				// current value layer
+				if (normalizedResourceRatio > 0) {
+					drawResourceBarFourDirectionalLayer(
+							context,
+							Arrays.copyOfRange(texture_ids, 6, 11),
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							is_centered,
+							progress_additional_middle_segment_amount,
+							horizontal_progress_left_end_width,
+							horizontal_progress_middle_segment_width,
+							horizontal_progress_right_end_width,
+							horizontal_progress_height,
+							vertical_progress_width,
+							vertical_progress_top_end_height,
+							vertical_progress_middle_segment_height,
+							vertical_progress_bottom_end_height,
+							normalizedResourceRatio
+					);
+				}
+			} else {
+
+				// current value layer
+				if (normalizedResourceRatio > 0) {
+					drawResourceBarFourDirectionalLayer(
+							context,
+							Arrays.copyOfRange(texture_ids, 18, 23),
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							is_centered,
+							progress_additional_middle_segment_amount,
+							horizontal_progress_left_end_width,
+							horizontal_progress_middle_segment_width,
+							horizontal_progress_right_end_width,
+							horizontal_progress_height,
+							vertical_progress_width,
+							vertical_progress_top_end_height,
+							vertical_progress_middle_segment_height,
+							vertical_progress_bottom_end_height,
+							normalizedResourceRatio
+					);
+				}
+
+				// animation layer
+				if (oldNormalizedResourceRatio > 0) {
+					drawResourceBarFourDirectionalLayer(
+							context,
+							Arrays.copyOfRange(texture_ids, 24, 29),
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							is_centered,
+							progress_additional_middle_segment_amount,
+							horizontal_progress_left_end_width,
+							horizontal_progress_middle_segment_width,
+							horizontal_progress_right_end_width,
+							horizontal_progress_height,
+							vertical_progress_width,
+							vertical_progress_top_end_height,
+							vertical_progress_middle_segment_height,
+							vertical_progress_bottom_end_height,
+							oldNormalizedResourceRatio
+					);
 				}
 			}
-			context.drawTexture(texture_ids[3], elementX, elementY + vertical_background_top_end_height + backgroundMiddleSectionLength, 0, vertical_background_top_end_height + vertical_background_middle_segment_height, backgroundTextureWidth, vertical_background_bottom_end_height, backgroundTextureWidth, backgroundTextureHeight);
 		} else {
-			context.drawTexture(texture_ids[0], elementX, elementY, 0, 0, horizontal_background_left_end_width, backgroundTextureHeight, backgroundTextureWidth, backgroundTextureHeight);
-			if (background_additional_middle_segment_amount > 0) {
-				for (int i = 0; i < background_additional_middle_segment_amount; i++) {
-					context.drawTexture(texture_ids[0], elementX + horizontal_background_left_end_width + (i * horizontal_background_middle_segment_width), elementY, horizontal_background_left_end_width, 0, horizontal_background_middle_segment_width, backgroundTextureHeight, backgroundTextureWidth, backgroundTextureHeight);
-				}
+			// progress
+//			int displayRatio = enable_smooth_animation ? oldNormalizedResourceRatio : normalizedResourceRatio;
+			if (normalizedResourceRatio > 0) {
+				drawResourceBarFourDirectionalLayer(
+						context,
+						Arrays.copyOfRange(texture_ids, 6, 11),
+						resource_bar_fill_direction,
+						progressElementX,
+						progressElementY,
+						is_centered,
+						progress_additional_middle_segment_amount,
+						horizontal_progress_left_end_width,
+						horizontal_progress_middle_segment_width,
+						horizontal_progress_right_end_width,
+						horizontal_progress_height,
+						vertical_progress_width,
+						vertical_progress_top_end_height,
+						vertical_progress_middle_segment_height,
+						vertical_progress_bottom_end_height,
+						normalizedResourceRatio
+				);
 			}
-			context.drawTexture(texture_ids[0], elementX + horizontal_background_left_end_width + backgroundMiddleSectionLength, elementY, horizontal_background_left_end_width + horizontal_background_middle_segment_width, 0, horizontal_progress_right_end_width, backgroundTextureHeight, backgroundTextureWidth, backgroundTextureHeight);
 		}
 
-		// progress
-		int displayRatio = enable_smooth_animation ? oldNormalizedBuildUpRatio : normalizedResourceRatio;
-		if (displayRatio > 0) {
-			int ratioFirstPart;
-			int ratioLastPart;
-			int progressElementX = elementX + progress_offset_x;
-			int progressElementY = elementY + progress_offset_y;
+		// reserved
+		if (normalizedReservedResourceRatio > 0) {
+			int reservedElementX = elementX + reserved_offset_x;
+			int reservedElementY = elementY + reserved_offset_y;
+			drawResourceBarFourDirectionalLayer(
+					context,
+					Arrays.copyOfRange(texture_ids, 30, 35),
+					getOppositeFillDirection(resource_bar_fill_direction),
+					reservedElementX,
+					reservedElementY,
+					is_centered,
+					reserved_additional_middle_segment_amount,
+					horizontal_reserved_left_end_width,
+					horizontal_reserved_middle_segment_width,
+					horizontal_reserved_right_end_width,
+					horizontal_reserved_height,
+					vertical_reserved_width,
+					vertical_reserved_top_end_height,
+					vertical_reserved_middle_segment_height,
+					vertical_reserved_bottom_end_height,
+					normalizedReservedResourceRatio
+			);
+		}
 
-			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
+		// overlay
+		if (show_current_value_overlay && normalizedResourceRatio > 0) {
+			int overlayElementX = progressElementX + overlay_offset_x;
+			int overlayElementY = progressElementY + overlay_offset_y;
+			if (resource_bar_fill_direction == ResourceBarFillDirection.BOTTOM_TO_TOP) {
 				// 1: bottom to top
-
-				ratioFirstPart = Math.min(vertical_progress_bottom_end_height, displayRatio);
-				ratioLastPart = Math.min(vertical_progress_top_end_height, displayRatio - vertical_progress_bottom_end_height - progressMiddleSectionLength);
-
-				context.drawTexture(texture_ids[4], progressElementX, progressElementY + progressBarLength - ratioFirstPart, 0, progressTextureHeight - ratioFirstPart, progressTextureWidth, ratioFirstPart, progressTextureWidth, progressTextureHeight);
-				if (displayRatio > vertical_progress_bottom_end_height && background_additional_middle_segment_amount > 0) {
-					boolean breakDisplay = false;
-					for (int i = 0; i < progress_additional_middle_segment_amount; i++) {
-						for (int j = 1; j <= vertical_progress_middle_segment_height; j++) {
-							int currentTextureY = vertical_progress_bottom_end_height + (i * vertical_progress_middle_segment_height) + j;
-							if (currentTextureY > displayRatio) {
-								breakDisplay = true;
-								break;
-							}
-							context.drawTexture(texture_ids[4], progressElementX, progressElementY + progressBarLength - currentTextureY, 0, vertical_progress_top_end_height + vertical_progress_middle_segment_height - j, progressTextureWidth, 1, progressTextureWidth, progressTextureHeight);
-						}
-						if (breakDisplay) {
-							break;
-						}
-					}
-
+				if (current_value > 0 && current_value < max_value) {
+					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
-				if (displayRatio > (vertical_progress_bottom_end_height + progressMiddleSectionLength)) {
-					context.drawTexture(texture_ids[4], progressElementX, progressElementY + vertical_progress_top_end_height - ratioLastPart, 0, vertical_progress_top_end_height - ratioLastPart, progressTextureWidth, ratioLastPart, progressTextureWidth, progressTextureHeight);
-				}
-			}
-			else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
+			} else if (resource_bar_fill_direction == ResourceBarFillDirection.RIGHT_TO_LEFT) {
 				// 2: right to left
-
-				ratioFirstPart = Math.min(horizontal_progress_right_end_width, displayRatio);
-				ratioLastPart = Math.min(horizontal_progress_left_end_width, displayRatio - horizontal_progress_right_end_width - progressMiddleSectionLength);
-
-				context.drawTexture(texture_ids[1], progressElementX + progressBarLength - ratioFirstPart, progressElementY, progressTextureWidth - ratioFirstPart, 0, ratioFirstPart, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-				if (displayRatio > horizontal_progress_right_end_width && background_additional_middle_segment_amount > 0) {
-					boolean breakDisplay = false;
-					for (int i = 0; i < progress_additional_middle_segment_amount; i++) {
-						for (int j = 1; j <= horizontal_progress_middle_segment_width; j++) {
-							int currentTextureX = horizontal_progress_left_end_width + (i * horizontal_progress_middle_segment_width) + j;
-							if (currentTextureX > displayRatio) {
-								breakDisplay = true;
-								break;
-							}
-							context.drawTexture(texture_ids[1], progressElementX + progressBarLength - currentTextureX, progressElementY, horizontal_progress_left_end_width + horizontal_progress_middle_segment_width - j, 0, 1, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-						}
-						if (breakDisplay) {
-							break;
-						}
-					}
-
+				if (current_value > 0 && current_value < max_value) {
+					context.drawTexture(texture_ids[36], overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
-				if (displayRatio > (horizontal_progress_right_end_width + progressMiddleSectionLength)) {
-					context.drawTexture(texture_ids[1], progressElementX + horizontal_progress_left_end_width - ratioLastPart, progressElementY, horizontal_progress_left_end_width - ratioLastPart, 0, ratioLastPart, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-				}
-			}
-			else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
+			} else if (resource_bar_fill_direction == ResourceBarFillDirection.TOP_TO_BOTTOM) {
 				// 3: top to bottom
-
-				ratioFirstPart = Math.min(vertical_progress_top_end_height, displayRatio);
-				ratioLastPart = Math.min(vertical_progress_bottom_end_height, displayRatio - vertical_progress_top_end_height - progressMiddleSectionLength);
-
-				context.drawTexture(texture_ids[4], progressElementX, progressElementY, 0, 0, progressTextureWidth, ratioFirstPart, progressTextureWidth, progressTextureHeight);
-				if (displayRatio > vertical_progress_top_end_height && background_additional_middle_segment_amount > 0) {
-					boolean breakDisplay = false;
-					for (int i = 0; i < progress_additional_middle_segment_amount; i++) {
-						for (int j = 0; j < vertical_progress_middle_segment_height; j++) {
-							int currentTextureY = vertical_progress_top_end_height + (i * vertical_progress_middle_segment_height) + j;
-							if (currentTextureY > displayRatio) {
-								breakDisplay = true;
-								break;
-							}
-							context.drawTexture(texture_ids[4], progressElementX, progressElementY + currentTextureY, 0, vertical_progress_top_end_height + j, progressTextureWidth, 1, progressTextureWidth, progressTextureHeight);
-						}
-						if (breakDisplay) {
-							break;
-						}
-					}
+				if (current_value > 0 && current_value < max_value) {
+					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
-				if (displayRatio > (vertical_progress_top_end_height + progressMiddleSectionLength)) {
-					context.drawTexture(texture_ids[4], progressElementX, progressElementY + vertical_progress_top_end_height + progressMiddleSectionLength, 0, vertical_progress_top_end_height + vertical_progress_middle_segment_height, progressTextureWidth, ratioLastPart, progressTextureWidth, progressTextureHeight);
-				}
-			}
-			else {
+			} else {
 				// 0: left to right
-
-				ratioFirstPart = Math.min(horizontal_progress_left_end_width, displayRatio);
-				ratioLastPart = Math.min(horizontal_progress_right_end_width, displayRatio - horizontal_progress_left_end_width - progressMiddleSectionLength);
-
-				context.drawTexture(texture_ids[1], progressElementX, progressElementY, 0, 0, ratioFirstPart, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-				if (displayRatio > horizontal_progress_left_end_width && background_additional_middle_segment_amount > 0) {
-					boolean breakDisplay = false;
-					for (int i = 0; i < progress_additional_middle_segment_amount; i++) {
-						for (int j = 0; j < horizontal_progress_middle_segment_width; j++) {
-							int currentTextureX = horizontal_progress_left_end_width + (i * horizontal_progress_middle_segment_width) + j;
-							if (currentTextureX > displayRatio) {
-								breakDisplay = true;
-								break;
-							}
-							context.drawTexture(texture_ids[1], progressElementX + currentTextureX, progressElementY, horizontal_progress_left_end_width + j, 0, 1, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-						}
-						if (breakDisplay) {
-							break;
-						}
-					}
+				if (current_value > 0 && current_value < max_value) {
+					context.drawTexture(texture_ids[36], overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
-				if (displayRatio > (horizontal_progress_left_end_width + progressMiddleSectionLength)) {
-					context.drawTexture(texture_ids[1], progressElementX + horizontal_progress_left_end_width + progressMiddleSectionLength, progressElementY, horizontal_progress_left_end_width + horizontal_progress_middle_segment_width, 0, ratioLastPart, progressTextureHeight, progressTextureWidth, progressTextureHeight);
-				}
-			}
-
-			// overlay
-			if (show_current_value_overlay) {
-				int overlayElementX = progressElementX + overlay_offset_x;
-				int overlayElementY = progressElementY + overlay_offset_y;
-				if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
-					// 1: bottom to top
-					if (current_value > 0 && current_value < max_value) {
-						context.drawTexture(texture_ids[5], overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
-					}
-				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
-					// 2: right to left
-					if (current_value > 0 && current_value < max_value) {
-						context.drawTexture(texture_ids[2], overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
-					}
-				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
-					// 3: top to bottom
-					if (current_value > 0 && current_value < max_value) {
-						context.drawTexture(texture_ids[5], overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
-					}
-				} else {
-					// 0: left to right
-					if (current_value > 0 && current_value < max_value) {
-						context.drawTexture(texture_ids[2], overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
-					}
-				}
-			}
-
-			if (show_number) {
-				String resourceBarNumberString = show_max_value ? current_value + "/" + max_value : String.valueOf(current_value);
-				int resourceBarNumberX = originX - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
-				int resourceBarNumberY = originY + number_offset_y;
-
-				client.getProfiler().swap(identifier_string + "_number");
-
-				context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
-				context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
-				context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
-				context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
-				context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
 			}
 		}
+
+		if (show_number) {
+			String resourceBarNumberString = show_max_value ? current_value + "/" + max_value : String.valueOf(current_value);
+			int resourceBarNumberX = originX - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
+			int resourceBarNumberY = originY + number_offset_y;
+
+			client.getProfiler().swap(identifier_string + "_number");
+
+			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
+			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
+			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
+			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
+			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
+		}
+
 
 		client.getProfiler().pop();
+	}
+
+	private static ResourceBarFillDirection getOppositeFillDirection(ResourceBarFillDirection fillDirection) {
+		if (fillDirection == ResourceBarFillDirection.BOTTOM_TO_TOP) {
+			return ResourceBarFillDirection.TOP_TO_BOTTOM;
+		} else if (fillDirection == ResourceBarFillDirection.RIGHT_TO_LEFT) {
+			return ResourceBarFillDirection.LEFT_TO_RIGHT;
+		} else if (fillDirection == ResourceBarFillDirection.TOP_TO_BOTTOM) {
+			return ResourceBarFillDirection.BOTTOM_TO_TOP;
+		} else {
+			return ResourceBarFillDirection.RIGHT_TO_LEFT;
+		}
+	}
+
+	private static void drawStaticTwoDirectionalLayer(
+			DrawContext context,
+			Identifier[] texture_ids,
+			ResourceBarFillDirection resource_bar_fill_direction,
+			int layer_x,
+			int layer_y,
+			boolean is_centered,
+			int additional_middle_segment_amount,
+			int horizontal_left_end_width,
+			int horizontal_middle_segment_width,
+			int horizontal_right_end_width,
+			int horizontal_height,
+			int vertical_width,
+			int vertical_top_end_height,
+			int vertical_middle_segment_height,
+			int vertical_bottom_end_height
+	) {
+
+		if (texture_ids.length != 6) {
+			ResourceBarAPI.LOGGER.info("wrong texture id array length, needs to be 6, is: " + texture_ids.length);
+			return;
+		}
+
+		int barLength;
+		int middleSectionLength;
+
+		if (resource_bar_fill_direction == ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarFillDirection.TOP_TO_BOTTOM) {
+			middleSectionLength = additional_middle_segment_amount * vertical_middle_segment_height;
+			barLength = vertical_top_end_height + middleSectionLength + vertical_bottom_end_height;
+			if (is_centered) {
+				layer_x -= vertical_width / 2;
+				layer_y -= barLength / 2;
+			}
+
+			context.drawTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, vertical_top_end_height, vertical_width, vertical_top_end_height);
+			if (additional_middle_segment_amount > 0) {
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					context.drawTexture(texture_ids[4], layer_x, layer_y + vertical_top_end_height + (i * vertical_middle_segment_height), 0, 0, vertical_width, vertical_middle_segment_height, vertical_width, vertical_middle_segment_height);
+				}
+			}
+			context.drawTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, vertical_bottom_end_height, vertical_width, vertical_bottom_end_height);
+		} else {
+			middleSectionLength = additional_middle_segment_amount * horizontal_middle_segment_width;
+			barLength = vertical_top_end_height + middleSectionLength + vertical_bottom_end_height;
+			if (is_centered) {
+				layer_x -= barLength / 2;
+				layer_y -= horizontal_height / 2;
+			}
+
+			context.drawTexture(texture_ids[0], layer_x, layer_y, 0, 0, horizontal_left_end_width, horizontal_height, horizontal_left_end_width, horizontal_height);
+			if (additional_middle_segment_amount > 0) {
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					context.drawTexture(texture_ids[1], layer_x + horizontal_left_end_width + (i * horizontal_middle_segment_width), layer_y, 0, 0, horizontal_middle_segment_width, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+				}
+			}
+			context.drawTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, horizontal_right_end_width, horizontal_height, horizontal_right_end_width, horizontal_height);
+		}
+
+	}
+
+	private static void drawResourceBarFourDirectionalLayer(
+			DrawContext context,
+			Identifier[] texture_ids,
+			ResourceBarFillDirection resource_bar_fill_direction,
+			int layer_x,
+			int layer_y,
+			boolean is_centered,
+			int additional_middle_segment_amount,
+			int horizontal_left_end_width,
+			int horizontal_middle_segment_width,
+			int horizontal_right_end_width,
+			int horizontal_height,
+			int vertical_width,
+			int vertical_top_end_height,
+			int vertical_middle_segment_height,
+			int vertical_bottom_end_height,
+			int display_ratio
+
+	) {
+
+		if (texture_ids.length != 6) {
+			ResourceBarAPI.LOGGER.info("wrong texture id array length, needs to be 6, is: " + texture_ids.length);
+			return;
+		}
+
+		int barLength;
+		int middleSectionLength;
+		int ratioFirstPart;
+		int ratioLastPart;
+
+		if (resource_bar_fill_direction == ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarFillDirection.TOP_TO_BOTTOM) {
+			middleSectionLength = additional_middle_segment_amount * vertical_middle_segment_height;
+			barLength = vertical_top_end_height + middleSectionLength + vertical_bottom_end_height;
+
+			if (is_centered) {
+				layer_x -= vertical_width / 2;
+				layer_y -= barLength / 2;
+			}
+		} else {
+			middleSectionLength = additional_middle_segment_amount * horizontal_middle_segment_width;
+			barLength = horizontal_left_end_width + middleSectionLength + horizontal_right_end_width;
+
+			if (is_centered) {
+				layer_x -= barLength / 2;
+				layer_y -= horizontal_height / 2;
+			}
+		}
+
+		if (resource_bar_fill_direction == ResourceBarFillDirection.BOTTOM_TO_TOP) {
+			// 1: bottom to top
+
+			ratioFirstPart = Math.min(vertical_bottom_end_height, display_ratio);
+			ratioLastPart = Math.min(vertical_top_end_height, display_ratio - vertical_bottom_end_height - middleSectionLength);
+
+			// bottom
+			context.drawTexture(texture_ids[5], layer_x, layer_y + barLength - ratioFirstPart, 0, vertical_bottom_end_height - ratioFirstPart, vertical_width, ratioFirstPart, vertical_width, vertical_bottom_end_height);
+
+			// middle
+			if (display_ratio > vertical_bottom_end_height && additional_middle_segment_amount > 0) {
+				boolean breakDisplay = false;
+				int currentTextureY;
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					for (int j = 1; j <= vertical_middle_segment_height; j++) {
+						currentTextureY = vertical_bottom_end_height + (i * vertical_middle_segment_height) + j;
+						if (currentTextureY > display_ratio) {
+							breakDisplay = true;
+							break;
+						}
+						context.drawTexture(texture_ids[4], layer_x, layer_y + barLength - currentTextureY, 0, vertical_bottom_end_height + vertical_middle_segment_height - j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
+					}
+					if (breakDisplay) {
+						break;
+					}
+				}
+
+			}
+
+			// top
+			if (display_ratio > (vertical_bottom_end_height + middleSectionLength)) {
+				context.drawTexture(texture_ids[3], layer_x, layer_y + vertical_top_end_height - ratioLastPart, 0, vertical_top_end_height - ratioLastPart, vertical_width, ratioLastPart, vertical_width, vertical_top_end_height);
+			}
+		} else if (resource_bar_fill_direction == ResourceBarFillDirection.RIGHT_TO_LEFT) {
+			// 2: right to left
+
+			ratioFirstPart = Math.min(horizontal_right_end_width, display_ratio);
+			ratioLastPart = Math.min(horizontal_left_end_width, display_ratio - horizontal_right_end_width - middleSectionLength);
+
+			context.drawTexture(texture_ids[2], layer_x + barLength - ratioFirstPart, layer_y, vertical_width - ratioFirstPart, 0, ratioFirstPart, horizontal_height, vertical_width, horizontal_height);
+			if (display_ratio > horizontal_right_end_width && additional_middle_segment_amount > 0) {
+				boolean breakDisplay = false;
+				int currentTextureX;
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					for (int j = 1; j <= horizontal_middle_segment_width; j++) {
+						currentTextureX = horizontal_left_end_width + (i * horizontal_middle_segment_width) + j;
+						if (currentTextureX > display_ratio) {
+							breakDisplay = true;
+							break;
+						}
+						context.drawTexture(texture_ids[1], layer_x + barLength - currentTextureX, layer_y, horizontal_middle_segment_width - j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+					}
+					if (breakDisplay) {
+						break;
+					}
+				}
+
+			}
+
+			// left
+			if (display_ratio > (horizontal_right_end_width + middleSectionLength)) {
+				context.drawTexture(texture_ids[0], layer_x + horizontal_left_end_width - ratioLastPart, layer_y, horizontal_left_end_width - ratioLastPart, 0, ratioLastPart, horizontal_height, horizontal_left_end_width, horizontal_height);
+			}
+		} else if (resource_bar_fill_direction == ResourceBarFillDirection.TOP_TO_BOTTOM) {
+			// 3: top to bottom
+
+			ratioFirstPart = Math.min(vertical_top_end_height, display_ratio);
+			ratioLastPart = Math.min(vertical_bottom_end_height, display_ratio - vertical_top_end_height - middleSectionLength);
+
+			// top
+			context.drawTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, ratioFirstPart, vertical_width, vertical_top_end_height);
+
+			// middle
+			if (display_ratio > vertical_top_end_height && additional_middle_segment_amount > 0) {
+				boolean breakDisplay = false;
+				int currentTextureY;
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					for (int j = 0; j < vertical_middle_segment_height; j++) {
+						currentTextureY = vertical_top_end_height + (i * vertical_middle_segment_height) + j;
+						if (currentTextureY > display_ratio) {
+							breakDisplay = true;
+							break;
+						}
+						context.drawTexture(texture_ids[4], layer_x, layer_y + currentTextureY, 0, j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
+					}
+					if (breakDisplay) {
+						break;
+					}
+				}
+			}
+
+			// bottom
+			if (display_ratio > (vertical_top_end_height + middleSectionLength)) {
+				context.drawTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, ratioLastPart, vertical_width, vertical_bottom_end_height);
+			}
+		} else {
+			// 0: left to right
+
+			ratioFirstPart = Math.min(horizontal_left_end_width, display_ratio);
+			ratioLastPart = Math.min(horizontal_right_end_width, display_ratio - horizontal_left_end_width - middleSectionLength);
+
+			// left
+			context.drawTexture(texture_ids[0], layer_x, layer_y, 0, 0, ratioFirstPart, horizontal_height, horizontal_left_end_width, horizontal_height);
+
+			// middle
+			if (display_ratio > horizontal_left_end_width && additional_middle_segment_amount > 0) {
+				boolean breakDisplay = false;
+				int currentTextureX;
+				for (int i = 0; i < additional_middle_segment_amount; i++) {
+					for (int j = 0; j < horizontal_middle_segment_width; j++) {
+						currentTextureX = horizontal_left_end_width + (i * horizontal_middle_segment_width) + j;
+						if (currentTextureX > display_ratio) {
+							breakDisplay = true;
+							break;
+						}
+						context.drawTexture(texture_ids[1], layer_x + currentTextureX, layer_y, horizontal_left_end_width + j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+					}
+					if (breakDisplay) {
+						break;
+					}
+				}
+			}
+
+			// right
+			if (display_ratio > (horizontal_left_end_width + middleSectionLength)) {
+				context.drawTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, ratioLastPart, horizontal_height, horizontal_right_end_width, horizontal_height);
+			}
+		}
+	}
+
+	public enum ResourceBarFillDirection {
+		LEFT_TO_RIGHT,
+		BOTTOM_TO_TOP,
+		RIGHT_TO_LEFT,
+		TOP_TO_BOTTOM;
+
+		ResourceBarFillDirection() {
+		}
+	}
+
+	public enum ResourceBarOrigin {
+		TOP_LEFT,
+		TOP_MIDDLE,
+		TOP_RIGHT,
+		MIDDLE_LEFT,
+		MIDDLE_MIDDLE,
+		MIDDLE_RIGHT,
+		BOTTOM_LEFT,
+		BOTTOM_MIDDLE,
+		BOTTOM_RIGHT;
+
+		ResourceBarOrigin() {
+		}
 	}
 }
