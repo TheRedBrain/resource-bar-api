@@ -8,7 +8,7 @@
 		"TheRedBrain"
 	],
 	"contact": {
-		"sources": "https://github.com/TheRedBrain/overhauled-damage"
+		"sources": "https://github.com/TheRedBrain/resource-bar-api"
 	},
 	"license": "MIT",
 	"icon": "assets/resourcebarapi/icon.png",
@@ -30,7 +30,6 @@
 	],
 	"depends": {
 		"minecraft": "${minecraft_version}",
-		"fabricloader": ">=${loader_version}",
-		"fabric-api": "*"
+		"fabricloader": ">=${loader_version}"
 	}
 }

@@ -1,6 +1,6 @@
 # Resource Bar API
 
-A small API mod that allows mods to easily set up a complete resource bar HUD element.
+A small java API mod that allows mods to easily set up a complete resource bar HUD element.
 
 This can be for example a mana bar.
 
