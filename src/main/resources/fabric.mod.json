@@ -3,7 +3,7 @@
 	"id": "resourcebarapi",
 	"version": "${version}",
 	"name": "Resource Bar API",
-	"description": "Overhauls the damage calculations and adds elemental damage.",
+	"description": "A small java API mod that allows mods to easily set up a complete resource bar HUD element.",
 	"authors": [
 		"TheRedBrain"
 	],
