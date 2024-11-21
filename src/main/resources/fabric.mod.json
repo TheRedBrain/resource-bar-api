@@ -3,12 +3,12 @@
 	"id": "resourcebarapi",
 	"version": "${version}",
 	"name": "Resource Bar API",
-	"description": "Overhauls the damage calculations and adds elemental damage.",
+	"description": "A small java API mod that allows mods to easily set up a complete resource bar HUD element.",
 	"authors": [
 		"TheRedBrain"
 	],
 	"contact": {
-		"sources": "https://github.com/TheRedBrain/overhauled-damage"
+		"sources": "https://github.com/TheRedBrain/resource-bar-api"
 	},
 	"license": "MIT",
 	"icon": "assets/resourcebarapi/icon.png",
@@ -30,7 +30,6 @@
 	],
 	"depends": {
 		"minecraft": "${minecraft_version}",
-		"fabricloader": ">=${loader_version}",
-		"fabric-api": "*"
+		"fabricloader": ">=${loader_version}"
 	}
 }
