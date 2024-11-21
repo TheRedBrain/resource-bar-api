@@ -91,10 +91,6 @@ if(project.hasProperty('release_type')) {
 			addGameVersion "${project.minecraft_version}"
 			addGameVersion "Fabric"
 
-			relations {
-
-			}
-
 			mainArtifact(remapJar)
 			afterEvaluate {
 				uploadTask.dependsOn(remapJar)
