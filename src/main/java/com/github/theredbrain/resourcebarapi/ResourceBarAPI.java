@@ -14,4 +14,29 @@ public class ResourceBarAPI implements ModInitializer {
 		LOGGER.info("Initializing Resource Bar API!");
 	}
 
+	public enum ResourceBarFillDirection {
+		LEFT_TO_RIGHT,
+		BOTTOM_TO_TOP,
+		RIGHT_TO_LEFT,
+		TOP_TO_BOTTOM;
+
+		ResourceBarFillDirection() {
+		}
+	}
+
+	public enum ResourceBarOrigin {
+		TOP_LEFT,
+		TOP_MIDDLE,
+		TOP_RIGHT,
+		MIDDLE_LEFT,
+		MIDDLE_MIDDLE,
+		MIDDLE_RIGHT,
+		BOTTOM_LEFT,
+		BOTTOM_MIDDLE,
+		BOTTOM_RIGHT;
+
+		ResourceBarOrigin() {
+		}
+	}
+
 }
