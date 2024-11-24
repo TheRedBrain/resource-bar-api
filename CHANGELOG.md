@@ -1,3 +1,7 @@
+# 2.1.1
+
+Reading can help!
+
 # 2.1.0
 
 - moved "ResourceBarFillDirection" and "ResourceBarOrigin" enums to main source set
