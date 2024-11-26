@@ -334,22 +334,22 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 				// 1: bottom to top
 				if (current_value > 0 && current_value < max_value) {
-					context.drawGuiTexture(texture_ids[37], overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
+					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 				// 2: right to left
 				if (current_value > 0 && current_value < max_value) {
-					context.drawGuiTexture(texture_ids[36], overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
+					context.drawTexture(texture_ids[36], overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 				// 3: top to bottom
 				if (current_value > 0 && current_value < max_value) {
-					context.drawGuiTexture(texture_ids[37], overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
+					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
 			} else {
 				// 0: left to right
 				if (current_value > 0 && current_value < max_value) {
-					context.drawGuiTexture(texture_ids[36], overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
+					context.drawTexture(texture_ids[36], overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
 			}
 		}
@@ -418,13 +418,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				layer_y -= barLength / 2;
 			}
 
-			context.drawGuiTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, vertical_top_end_height, vertical_width, vertical_top_end_height);
+			context.drawTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, vertical_top_end_height, vertical_width, vertical_top_end_height);
 			if (additional_middle_segment_amount > 0) {
 				for (int i = 0; i < additional_middle_segment_amount; i++) {
-					context.drawGuiTexture(texture_ids[4], layer_x, layer_y + vertical_top_end_height + (i * vertical_middle_segment_height), 0, 0, vertical_width, vertical_middle_segment_height, vertical_width, vertical_middle_segment_height);
+					context.drawTexture(texture_ids[4], layer_x, layer_y + vertical_top_end_height + (i * vertical_middle_segment_height), 0, 0, vertical_width, vertical_middle_segment_height, vertical_width, vertical_middle_segment_height);
 				}
 			}
-			context.drawGuiTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, vertical_bottom_end_height, vertical_width, vertical_bottom_end_height);
+			context.drawTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, vertical_bottom_end_height, vertical_width, vertical_bottom_end_height);
 		} else {
 			middleSectionLength = additional_middle_segment_amount * horizontal_middle_segment_width;
 			barLength = vertical_top_end_height + middleSectionLength + vertical_bottom_end_height;
@@ -433,13 +433,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				layer_y -= horizontal_height / 2;
 			}
 
-			context.drawGuiTexture(texture_ids[0], layer_x, layer_y, 0, 0, horizontal_left_end_width, horizontal_height, horizontal_left_end_width, horizontal_height);
+			context.drawTexture(texture_ids[0], layer_x, layer_y, 0, 0, horizontal_left_end_width, horizontal_height, horizontal_left_end_width, horizontal_height);
 			if (additional_middle_segment_amount > 0) {
 				for (int i = 0; i < additional_middle_segment_amount; i++) {
-					context.drawGuiTexture(texture_ids[1], layer_x + horizontal_left_end_width + (i * horizontal_middle_segment_width), layer_y, 0, 0, horizontal_middle_segment_width, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+					context.drawTexture(texture_ids[1], layer_x + horizontal_left_end_width + (i * horizontal_middle_segment_width), layer_y, 0, 0, horizontal_middle_segment_width, horizontal_height, horizontal_middle_segment_width, horizontal_height);
 				}
 			}
-			context.drawGuiTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, horizontal_right_end_width, horizontal_height, horizontal_right_end_width, horizontal_height);
+			context.drawTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, horizontal_right_end_width, horizontal_height, horizontal_right_end_width, horizontal_height);
 		}
 
 	}
@@ -499,7 +499,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ratioLastPart = Math.min(vertical_top_end_height, display_ratio - vertical_bottom_end_height - middleSectionLength);
 
 			// bottom
-			context.drawGuiTexture(texture_ids[5], layer_x, layer_y + barLength - ratioFirstPart, 0, vertical_bottom_end_height - ratioFirstPart, vertical_width, ratioFirstPart, vertical_width, vertical_bottom_end_height);
+			context.drawTexture(texture_ids[5], layer_x, layer_y + barLength - ratioFirstPart, 0, vertical_bottom_end_height - ratioFirstPart, vertical_width, ratioFirstPart, vertical_width, vertical_bottom_end_height);
 
 			// middle
 			if (display_ratio > vertical_bottom_end_height && additional_middle_segment_amount > 0) {
@@ -512,7 +512,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							breakDisplay = true;
 							break;
 						}
-						context.drawGuiTexture(texture_ids[4], layer_x, layer_y + barLength - currentTextureY, 0, vertical_bottom_end_height + vertical_middle_segment_height - j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
+						context.drawTexture(texture_ids[4], layer_x, layer_y + barLength - currentTextureY, 0, vertical_bottom_end_height + vertical_middle_segment_height - j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
 					}
 					if (breakDisplay) {
 						break;
@@ -523,7 +523,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 			// top
 			if (display_ratio > (vertical_bottom_end_height + middleSectionLength)) {
-				context.drawGuiTexture(texture_ids[3], layer_x, layer_y + vertical_top_end_height - ratioLastPart, 0, vertical_top_end_height - ratioLastPart, vertical_width, ratioLastPart, vertical_width, vertical_top_end_height);
+				context.drawTexture(texture_ids[3], layer_x, layer_y + vertical_top_end_height - ratioLastPart, 0, vertical_top_end_height - ratioLastPart, vertical_width, ratioLastPart, vertical_width, vertical_top_end_height);
 			}
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 			// 2: right to left
@@ -531,7 +531,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ratioFirstPart = Math.min(horizontal_right_end_width, display_ratio);
 			ratioLastPart = Math.min(horizontal_left_end_width, display_ratio - horizontal_right_end_width - middleSectionLength);
 
-			context.drawGuiTexture(texture_ids[2], layer_x + barLength - ratioFirstPart, layer_y, vertical_width - ratioFirstPart, 0, ratioFirstPart, horizontal_height, vertical_width, horizontal_height);
+			context.drawTexture(texture_ids[2], layer_x + barLength - ratioFirstPart, layer_y, vertical_width - ratioFirstPart, 0, ratioFirstPart, horizontal_height, vertical_width, horizontal_height);
 			if (display_ratio > horizontal_right_end_width && additional_middle_segment_amount > 0) {
 				boolean breakDisplay = false;
 				int currentTextureX;
@@ -542,7 +542,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							breakDisplay = true;
 							break;
 						}
-						context.drawGuiTexture(texture_ids[1], layer_x + barLength - currentTextureX, layer_y, horizontal_middle_segment_width - j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+						context.drawTexture(texture_ids[1], layer_x + barLength - currentTextureX, layer_y, horizontal_middle_segment_width - j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
 					}
 					if (breakDisplay) {
 						break;
@@ -553,7 +553,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 			// left
 			if (display_ratio > (horizontal_right_end_width + middleSectionLength)) {
-				context.drawGuiTexture(texture_ids[0], layer_x + horizontal_left_end_width - ratioLastPart, layer_y, horizontal_left_end_width - ratioLastPart, 0, ratioLastPart, horizontal_height, horizontal_left_end_width, horizontal_height);
+				context.drawTexture(texture_ids[0], layer_x + horizontal_left_end_width - ratioLastPart, layer_y, horizontal_left_end_width - ratioLastPart, 0, ratioLastPart, horizontal_height, horizontal_left_end_width, horizontal_height);
 			}
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			// 3: top to bottom
@@ -562,7 +562,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ratioLastPart = Math.min(vertical_bottom_end_height, display_ratio - vertical_top_end_height - middleSectionLength);
 
 			// top
-			context.drawGuiTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, ratioFirstPart, vertical_width, vertical_top_end_height);
+			context.drawTexture(texture_ids[3], layer_x, layer_y, 0, 0, vertical_width, ratioFirstPart, vertical_width, vertical_top_end_height);
 
 			// middle
 			if (display_ratio > vertical_top_end_height && additional_middle_segment_amount > 0) {
@@ -575,7 +575,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							breakDisplay = true;
 							break;
 						}
-						context.drawGuiTexture(texture_ids[4], layer_x, layer_y + currentTextureY, 0, j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
+						context.drawTexture(texture_ids[4], layer_x, layer_y + currentTextureY, 0, j, vertical_width, 1, vertical_width, vertical_middle_segment_height);
 					}
 					if (breakDisplay) {
 						break;
@@ -585,7 +585,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 			// bottom
 			if (display_ratio > (vertical_top_end_height + middleSectionLength)) {
-				context.drawGuiTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, ratioLastPart, vertical_width, vertical_bottom_end_height);
+				context.drawTexture(texture_ids[5], layer_x, layer_y + vertical_top_end_height + middleSectionLength, 0, 0, vertical_width, ratioLastPart, vertical_width, vertical_bottom_end_height);
 			}
 		} else {
 			// 0: left to right
@@ -594,7 +594,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ratioLastPart = Math.min(horizontal_right_end_width, display_ratio - horizontal_left_end_width - middleSectionLength);
 
 			// left
-			context.drawGuiTexture(texture_ids[0], layer_x, layer_y, 0, 0, ratioFirstPart, horizontal_height, horizontal_left_end_width, horizontal_height);
+			context.drawTexture(texture_ids[0], layer_x, layer_y, 0, 0, ratioFirstPart, horizontal_height, horizontal_left_end_width, horizontal_height);
 
 			// middle
 			if (display_ratio > horizontal_left_end_width && additional_middle_segment_amount > 0) {
@@ -607,7 +607,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							breakDisplay = true;
 							break;
 						}
-						context.drawGuiTexture(texture_ids[1], layer_x + currentTextureX, layer_y, horizontal_left_end_width + j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
+						context.drawTexture(texture_ids[1], layer_x + currentTextureX, layer_y, horizontal_left_end_width + j, 0, 1, horizontal_height, horizontal_middle_segment_width, horizontal_height);
 					}
 					if (breakDisplay) {
 						break;
@@ -617,7 +617,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 			// right
 			if (display_ratio > (horizontal_left_end_width + middleSectionLength)) {
-				context.drawGuiTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, ratioLastPart, horizontal_height, horizontal_right_end_width, horizontal_height);
+				context.drawTexture(texture_ids[2], layer_x + horizontal_left_end_width + middleSectionLength, layer_y, 0, 0, ratioLastPart, horizontal_height, horizontal_right_end_width, horizontal_height);
 			}
 		}
 	}

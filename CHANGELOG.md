@@ -1,3 +1,7 @@
+# 2.2.0
+
+- changed "drawGuiTexture" back to "drawTexture" method calls, texture identifiers need to reflect this
+
 # 2.1.1
 
 Reading can help!
