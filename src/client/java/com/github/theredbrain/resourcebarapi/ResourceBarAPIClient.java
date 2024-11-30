@@ -168,7 +168,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		// background
 		drawStaticTwoDirectionalLayer(
 				context,
-				Arrays.copyOfRange(texture_ids, 0, 5),
+				Arrays.copyOfRange(texture_ids, 0, 6),
 				resource_bar_fill_direction,
 				elementX,
 				elementY,
@@ -193,7 +193,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				if (oldNormalizedResourceRatio > 0) {
 					drawResourceBarFourDirectionalLayer(
 							context,
-							Arrays.copyOfRange(texture_ids, 12, 17),
+							Arrays.copyOfRange(texture_ids, 12, 18),
 							resource_bar_fill_direction,
 							progressElementX,
 							progressElementY,
@@ -215,7 +215,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				if (normalizedResourceRatio > 0) {
 					drawResourceBarFourDirectionalLayer(
 							context,
-							Arrays.copyOfRange(texture_ids, 6, 11),
+							Arrays.copyOfRange(texture_ids, 6, 12),
 							resource_bar_fill_direction,
 							progressElementX,
 							progressElementY,
@@ -238,7 +238,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				if (normalizedResourceRatio > 0) {
 					drawResourceBarFourDirectionalLayer(
 							context,
-							Arrays.copyOfRange(texture_ids, 18, 23),
+							Arrays.copyOfRange(texture_ids, 18, 24),
 							resource_bar_fill_direction,
 							progressElementX,
 							progressElementY,
@@ -260,7 +260,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				if (oldNormalizedResourceRatio > 0) {
 					drawResourceBarFourDirectionalLayer(
 							context,
-							Arrays.copyOfRange(texture_ids, 24, 29),
+							Arrays.copyOfRange(texture_ids, 24, 30),
 							resource_bar_fill_direction,
 							progressElementX,
 							progressElementY,
@@ -284,7 +284,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			if (normalizedResourceRatio > 0) {
 				drawResourceBarFourDirectionalLayer(
 						context,
-						Arrays.copyOfRange(texture_ids, 6, 11),
+						Arrays.copyOfRange(texture_ids, 6, 12),
 						resource_bar_fill_direction,
 						progressElementX,
 						progressElementY,
@@ -309,7 +309,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int reservedElementY = elementY + reserved_offset_y;
 			drawResourceBarFourDirectionalLayer(
 					context,
-					Arrays.copyOfRange(texture_ids, 30, 35),
+					Arrays.copyOfRange(texture_ids, 30, 36),
 					getOppositeFillDirection(resource_bar_fill_direction),
 					reservedElementX,
 					reservedElementY,
