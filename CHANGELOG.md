@@ -1,5 +1,12 @@
 # 1.2.0
 
+- added dynamic element length based on max value (with individual values for background, progress and reserved layer)
+- added dynamic element offsets based on max value
+- added additional static offsets
+- fixed overlay not respecting "is_centered" config option
+
+# 1.2.0
+
 - fixed a bunch of issues
 
 # 1.1.0

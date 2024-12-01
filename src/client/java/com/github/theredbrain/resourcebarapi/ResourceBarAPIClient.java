@@ -6,11 +6,17 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ResourceBarAPIClient implements ClientModInitializer {
+
+	private static final int TEXTURE_ID_ARRAY_LENGTH = 38;
+	private static final int CACHED_VALUE_ARRAY_LENGTH = 8;
 
 	public static Map<String, int[]> CACHED_RESOURCE_BAR_VALUES = new HashMap<>();
 
@@ -29,12 +35,14 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int current_value_reduction,
 			int current_value_reservation,
 			ResourceBarAPI.ResourceBarOrigin resource_bar_origin,
-			int element_offset_x,
-			int element_offset_y,
+			LinkedHashMap<Integer, Integer> element_offsets_x,
+			LinkedHashMap<Integer, Integer> element_offsets_y,
+			int additional_offset_x,
+			int additional_offset_y,
 			boolean is_centered,
 			Identifier[] texture_ids,
 			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
-			int background_additional_middle_segment_amount,
+			LinkedHashMap<Integer, Integer> background_additional_middle_segment_amounts,
 			int horizontal_background_left_end_width,
 			int horizontal_background_middle_segment_width,
 			int horizontal_background_right_end_width,
@@ -45,7 +53,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int vertical_background_bottom_end_height,
 			int progress_offset_x,
 			int progress_offset_y,
-			int progress_additional_middle_segment_amount,
+			LinkedHashMap<Integer, Integer> progress_additional_middle_segment_amounts,
 			int horizontal_progress_left_end_width,
 			int horizontal_progress_middle_segment_width,
 			int horizontal_progress_right_end_width,
@@ -56,7 +64,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int vertical_progress_bottom_end_height,
 			int reserved_offset_x,
 			int reserved_offset_y,
-			int reserved_additional_middle_segment_amount,
+			LinkedHashMap<Integer, Integer> reserved_additional_middle_segment_amounts,
 			int horizontal_reserved_left_end_width,
 			int horizontal_reserved_middle_segment_width,
 			int horizontal_reserved_right_end_width,
@@ -82,8 +90,12 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int resource_bar_number_color
 	) {
 
-		if (texture_ids.length != 38) {
-			ResourceBarAPI.LOGGER.info("wrong texture id array length, needs to be 32, is: " + texture_ids.length);
+		if (texture_ids.length != TEXTURE_ID_ARRAY_LENGTH) {
+			ResourceBarAPI.LOGGER.info("wrong texture id array length, needs to be " + TEXTURE_ID_ARRAY_LENGTH + ", is: " + texture_ids.length);
+			return;
+		}
+		if (cached_values_default.length != CACHED_VALUE_ARRAY_LENGTH) {
+			ResourceBarAPI.LOGGER.info("wrong default cached values array length, needs to be " + CACHED_VALUE_ARRAY_LENGTH + ", is: " + cached_values_default.length);
 			return;
 		}
 
@@ -121,18 +133,86 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			originX = 0;
 			originY = 0;
 		}
-		int elementX = originX + element_offset_x;
-		int elementY = originY + element_offset_y;
+
+//		String identifierString = StaminaAttributes.MOD_ID + ":stamina";
+//		int[] cached_resource_bar_values_default = new int[]{-1, -1, 0, 0, 0, 0, 0, 0};
+
+		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
+		if (cachedValues.length != CACHED_VALUE_ARRAY_LENGTH) {
+			cachedValues = cached_values_default;
+		}
+
+		int oldMaxBuildUp = cachedValues[0];
+		int oldNormalizedResourceRatio = cachedValues[1];
+		int resourceBarAnimationCounter = cachedValues[2];
+		int element_offset_x = cachedValues[3];
+		int element_offset_y = cachedValues[4];
+		int backgroundAdditionalMiddleSegmentAmount = cachedValues[5];
+		int progressAdditionalMiddleSegmentAmount = cachedValues[6];
+		int reservedAdditionalMiddleSegmentAmount = cachedValues[7];
+
+		boolean recalculate_cache = false;
+
+		if (oldMaxBuildUp != max_value) {
+			oldMaxBuildUp = max_value;
+			recalculate_cache = true;
+
+			ResourceBarAPI.LOGGER.info("calculate stuff");
+
+			int current_threshold = 0;
+
+			List<Integer> list = new ArrayList<>(element_offsets_x.keySet());
+			for (Integer threshold : list) {
+				if (max_value >= threshold && threshold >= current_threshold) {
+					element_offset_x = element_offsets_x.get(threshold);
+					current_threshold = threshold;
+				}
+			}
+
+			list = new ArrayList<>(element_offsets_y.keySet());
+			for (Integer threshold : list) {
+				if (max_value >= threshold && threshold >= current_threshold) {
+					element_offset_y = element_offsets_y.get(threshold);
+					current_threshold = threshold;
+				}
+			}
+
+			list = new ArrayList<>(background_additional_middle_segment_amounts.keySet());
+			for (Integer threshold : list) {
+				if (max_value >= threshold && threshold >= current_threshold) {
+					backgroundAdditionalMiddleSegmentAmount = background_additional_middle_segment_amounts.get(threshold);
+					current_threshold = threshold;
+				}
+			}
+
+			list = new ArrayList<>(progress_additional_middle_segment_amounts.keySet());
+			for (Integer threshold : list) {
+				if (max_value >= threshold && threshold >= current_threshold) {
+					progressAdditionalMiddleSegmentAmount = progress_additional_middle_segment_amounts.get(threshold);
+					current_threshold = threshold;
+				}
+			}
+
+			list = new ArrayList<>(reserved_additional_middle_segment_amounts.keySet());
+			for (Integer threshold : list) {
+				if (max_value >= threshold && threshold >= current_threshold) {
+					reservedAdditionalMiddleSegmentAmount = reserved_additional_middle_segment_amounts.get(threshold);
+					current_threshold = threshold;
+				}
+			}
+		}
+		int elementX = originX + element_offset_x + additional_offset_x;
+		int elementY = originY + element_offset_y + additional_offset_y;
 
 		// region variable calculation
 		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
-			progressMiddleSectionLength = progress_additional_middle_segment_amount * vertical_progress_middle_segment_height;
-			reservedMiddleSectionLength = progress_additional_middle_segment_amount * vertical_progress_middle_segment_height;
+			progressMiddleSectionLength = progressAdditionalMiddleSegmentAmount * vertical_progress_middle_segment_height;
+			reservedMiddleSectionLength = reservedAdditionalMiddleSegmentAmount * vertical_progress_middle_segment_height;
 			progressBarLength = vertical_progress_top_end_height + progressMiddleSectionLength + vertical_progress_bottom_end_height;
 			reservedBarLength = vertical_reserved_top_end_height + reservedMiddleSectionLength + vertical_reserved_bottom_end_height;
 		} else {
-			progressMiddleSectionLength = progress_additional_middle_segment_amount * horizontal_progress_middle_segment_width;
-			reservedMiddleSectionLength = reserved_additional_middle_segment_amount * horizontal_reserved_middle_segment_width;
+			progressMiddleSectionLength = progressAdditionalMiddleSegmentAmount * horizontal_progress_middle_segment_width;
+			reservedMiddleSectionLength = reservedAdditionalMiddleSegmentAmount * horizontal_reserved_middle_segment_width;
 			progressBarLength = horizontal_progress_left_end_width + progressMiddleSectionLength + horizontal_progress_right_end_width;
 			reservedBarLength = horizontal_reserved_left_end_width + reservedMiddleSectionLength + horizontal_reserved_right_end_width;
 		}
@@ -141,14 +221,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		int normalizedResourceRatio = (int) (((double) current_value / Math.max(max_value, 1)) * (progressBarLength));
 		int normalizedReservedResourceRatio = (int) (((double) current_value_reservation / Math.max(max_value, 1)) * (reservedBarLength));
 
-		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
-
-		int oldMaxBuildUp = cachedValues[0];
-		int oldNormalizedResourceRatio = cachedValues[1];
-		int resourceBarAnimationCounter = cachedValues[2];
-
-		if (oldMaxBuildUp != max_value) {
-			oldMaxBuildUp = max_value;
+		if (recalculate_cache) {
 			if (!max_value_change_is_animated) {
 				oldNormalizedResourceRatio = normalizedResourceRatio;
 			}
@@ -161,7 +234,16 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			resourceBarAnimationCounter = 0;
 		}
 
-		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new int[]{oldMaxBuildUp, oldNormalizedResourceRatio, resourceBarAnimationCounter});
+		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new int[]{
+				oldMaxBuildUp,
+				oldNormalizedResourceRatio,
+				resourceBarAnimationCounter,
+				element_offset_x,
+				element_offset_y,
+				backgroundAdditionalMiddleSegmentAmount,
+				progressAdditionalMiddleSegmentAmount,
+				reservedAdditionalMiddleSegmentAmount
+		});
 
 		client.getProfiler().push(identifier_string + "_bar");
 
@@ -173,7 +255,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				elementX,
 				elementY,
 				is_centered,
-				background_additional_middle_segment_amount,
+				backgroundAdditionalMiddleSegmentAmount,
 				horizontal_background_left_end_width,
 				horizontal_background_middle_segment_width,
 				horizontal_background_right_end_width,
@@ -198,7 +280,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							progressElementX,
 							progressElementY,
 							is_centered,
-							progress_additional_middle_segment_amount,
+							progressAdditionalMiddleSegmentAmount,
 							horizontal_progress_left_end_width,
 							horizontal_progress_middle_segment_width,
 							horizontal_progress_right_end_width,
@@ -220,7 +302,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							progressElementX,
 							progressElementY,
 							is_centered,
-							progress_additional_middle_segment_amount,
+							progressAdditionalMiddleSegmentAmount,
 							horizontal_progress_left_end_width,
 							horizontal_progress_middle_segment_width,
 							horizontal_progress_right_end_width,
@@ -243,7 +325,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							progressElementX,
 							progressElementY,
 							is_centered,
-							progress_additional_middle_segment_amount,
+							progressAdditionalMiddleSegmentAmount,
 							horizontal_progress_left_end_width,
 							horizontal_progress_middle_segment_width,
 							horizontal_progress_right_end_width,
@@ -265,7 +347,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							progressElementX,
 							progressElementY,
 							is_centered,
-							progress_additional_middle_segment_amount,
+							progressAdditionalMiddleSegmentAmount,
 							horizontal_progress_left_end_width,
 							horizontal_progress_middle_segment_width,
 							horizontal_progress_right_end_width,
@@ -289,7 +371,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 						progressElementX,
 						progressElementY,
 						is_centered,
-						progress_additional_middle_segment_amount,
+						progressAdditionalMiddleSegmentAmount,
 						horizontal_progress_left_end_width,
 						horizontal_progress_middle_segment_width,
 						horizontal_progress_right_end_width,
@@ -314,7 +396,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					reservedElementX,
 					reservedElementY,
 					is_centered,
-					reserved_additional_middle_segment_amount,
+					reservedAdditionalMiddleSegmentAmount,
 					horizontal_reserved_left_end_width,
 					horizontal_reserved_middle_segment_width,
 					horizontal_reserved_right_end_width,
@@ -333,21 +415,37 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int overlayElementY = progressElementY + overlay_offset_y;
 			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 				// 1: bottom to top
+				if (is_centered) {
+					overlayElementX -= vertical_overlay_width / 2;
+					overlayElementY -= progressBarLength / 2;
+				}
 				if (current_value > 0 && current_value < max_value) {
 					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 				// 2: right to left
+				if (is_centered) {
+					overlayElementX -= progressBarLength / 2;
+					overlayElementY -= horizontal_overlay_height / 2;
+				}
 				if (current_value > 0 && current_value < max_value) {
 					context.drawTexture(texture_ids[36], overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 				// 3: top to bottom
+				if (is_centered) {
+					overlayElementX -= vertical_overlay_width / 2;
+					overlayElementY -= progressBarLength / 2;
+				}
 				if (current_value > 0 && current_value < max_value) {
 					context.drawTexture(texture_ids[37], overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, vertical_overlay_width, vertical_overlay_height, vertical_overlay_width, horizontal_overlay_height);
 				}
 			} else {
 				// 0: left to right
+				if (is_centered) {
+					overlayElementX -= progressBarLength / 2;
+					overlayElementY -= horizontal_overlay_height / 2;
+				}
 				if (current_value > 0 && current_value < max_value) {
 					context.drawTexture(texture_ids[36], overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, horizontal_overlay_width, horizontal_overlay_height, horizontal_overlay_width, horizontal_overlay_height);
 				}
