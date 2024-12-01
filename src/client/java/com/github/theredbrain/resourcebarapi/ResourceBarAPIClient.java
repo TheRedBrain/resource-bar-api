@@ -134,9 +134,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			originY = 0;
 		}
 
-//		String identifierString = StaminaAttributes.MOD_ID + ":stamina";
-//		int[] cached_resource_bar_values_default = new int[]{-1, -1, 0, 0, 0, 0, 0, 0};
-
 		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
 		if (cachedValues.length != CACHED_VALUE_ARRAY_LENGTH) {
 			cachedValues = cached_values_default;
@@ -157,8 +154,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			oldMaxBuildUp = max_value;
 			recalculate_cache = true;
 
-			ResourceBarAPI.LOGGER.info("calculate stuff");
-
 			int current_threshold = 0;
 
 			List<Integer> list = new ArrayList<>(element_offsets_x.keySet());
@@ -170,6 +165,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			}
 
 			list = new ArrayList<>(element_offsets_y.keySet());
+			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
 					element_offset_y = element_offsets_y.get(threshold);
@@ -178,6 +174,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			}
 
 			list = new ArrayList<>(background_additional_middle_segment_amounts.keySet());
+			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
 					backgroundAdditionalMiddleSegmentAmount = background_additional_middle_segment_amounts.get(threshold);
@@ -186,6 +183,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			}
 
 			list = new ArrayList<>(progress_additional_middle_segment_amounts.keySet());
+			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
 					progressAdditionalMiddleSegmentAmount = progress_additional_middle_segment_amounts.get(threshold);
@@ -194,6 +192,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			}
 
 			list = new ArrayList<>(reserved_additional_middle_segment_amounts.keySet());
+			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
 					reservedAdditionalMiddleSegmentAmount = reserved_additional_middle_segment_amounts.get(threshold);
@@ -207,7 +206,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		// region variable calculation
 		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP || resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			progressMiddleSectionLength = progressAdditionalMiddleSegmentAmount * vertical_progress_middle_segment_height;
-			reservedMiddleSectionLength = reservedAdditionalMiddleSegmentAmount * vertical_progress_middle_segment_height;
+			reservedMiddleSectionLength = reservedAdditionalMiddleSegmentAmount * vertical_reserved_middle_segment_height;
 			progressBarLength = vertical_progress_top_end_height + progressMiddleSectionLength + vertical_progress_bottom_end_height;
 			reservedBarLength = vertical_reserved_top_end_height + reservedMiddleSectionLength + vertical_reserved_bottom_end_height;
 		} else {
@@ -266,6 +265,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				vertical_background_bottom_end_height
 		);
 
+		// progress
 		int progressElementX = elementX + progress_offset_x;
 		int progressElementY = elementY + progress_offset_y;
 		if (enable_smooth_animation) {
@@ -361,8 +361,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				}
 			}
 		} else {
-			// progress
-//			int displayRatio = enable_smooth_animation ? oldNormalizedResourceRatio : normalizedResourceRatio;
 			if (normalizedResourceRatio > 0) {
 				drawResourceBarFourDirectionalLayer(
 						context,
