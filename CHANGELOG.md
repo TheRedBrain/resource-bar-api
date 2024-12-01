@@ -1,4 +1,4 @@
-# 1.2.0
+# 1.3.0
 
 - added dynamic element length based on max value (with individual values for background, progress and reserved layer)
 - added dynamic element offsets based on max value
