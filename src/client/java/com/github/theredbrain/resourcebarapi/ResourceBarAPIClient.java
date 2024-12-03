@@ -18,7 +18,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	private static final int TEXTURE_ID_ARRAY_LENGTH = 38;
 	private static final int CACHED_VALUE_ARRAY_LENGTH = 8;
 
-	public static Map<String, int[]> CACHED_RESOURCE_BAR_VALUES = new HashMap<>();
+	public static Map<String, double[]> CACHED_RESOURCE_BAR_VALUES = new HashMap<>();
 
 	@Override
 	public void onInitializeClient() {
@@ -29,11 +29,11 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			TextRenderer textRenderer,
 			DrawContext context,
 			String identifier_string,
-			int[] cached_values_default,
-			int current_value,
-			int max_value,
+			double[] cached_values_default,
+			double current_value,
+			double max_value,
 			int current_value_reduction,
-			int current_value_reservation,
+			double current_unreserved_value,
 			ResourceBarAPI.ResourceBarOrigin resource_bar_origin,
 			ValidatedMap<Integer, Integer> element_offsets_x,
 			ValidatedMap<Integer, Integer> element_offsets_y,
@@ -134,19 +134,19 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			originY = 0;
 		}
 
-		int[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
+		double[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
 		if (cachedValues.length != CACHED_VALUE_ARRAY_LENGTH) {
 			cachedValues = cached_values_default;
 		}
 
-		int oldMaxBuildUp = cachedValues[0];
-		int oldNormalizedResourceRatio = cachedValues[1];
-		int resourceBarAnimationCounter = cachedValues[2];
-		int element_offset_x = cachedValues[3];
-		int element_offset_y = cachedValues[4];
-		int backgroundAdditionalMiddleSegmentAmount = cachedValues[5];
-		int progressAdditionalMiddleSegmentAmount = cachedValues[6];
-		int reservedAdditionalMiddleSegmentAmount = cachedValues[7];
+		double oldMaxBuildUp = cachedValues[0];
+		int oldNormalizedResourceRatio = (int) cachedValues[1];
+		int resourceBarAnimationCounter = (int) cachedValues[2];
+		int element_offset_x = (int) cachedValues[3];
+		int element_offset_y = (int) cachedValues[4];
+		int backgroundAdditionalMiddleSegmentAmount = (int) cachedValues[5];
+		int progressAdditionalMiddleSegmentAmount = (int) cachedValues[6];
+		int reservedAdditionalMiddleSegmentAmount = (int) cachedValues[7];
 		boolean recalculate_cache = false;
 		if (oldMaxBuildUp != max_value) {
 			oldMaxBuildUp = max_value;
@@ -209,8 +209,9 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		}
 		// endregion variable calculation
 
-		int normalizedResourceRatio = (int) (((double) current_value / Math.max(max_value, 1)) * (progressBarLength));
-		int normalizedReservedResourceRatio = (int) (((double) current_value_reservation / Math.max(max_value, 1)) * (reservedBarLength));
+		int normalizedResourceRatio = (int) ((current_value / Math.max(max_value, 1)) * (progressBarLength));
+		double currentReservedValue = max_value - current_unreserved_value;
+		int normalizedReservedResourceRatio = (int) ((currentReservedValue / Math.max(max_value, 1)) * (reservedBarLength));
 
 		if (recalculate_cache) {
 			if (!max_value_change_is_animated) {
@@ -225,7 +226,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			resourceBarAnimationCounter = 0;
 		}
 
-		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new int[]{
+		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, new double[]{
 				oldMaxBuildUp,
 				oldNormalizedResourceRatio,
 				resourceBarAnimationCounter,
@@ -443,7 +444,10 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		}
 
 		if (show_number) {
-			String resourceBarNumberString = show_max_value ? current_value + "/" + max_value : String.valueOf(current_value);
+			int displayed_current_value = (int) Math.round(current_value);
+			int displayed_max_value = (int) Math.round(max_value);
+			int displayed_current_unreserved_value = (int) Math.round(current_unreserved_value);
+			String resourceBarNumberString = show_max_value ? (current_unreserved_value > 0 ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
 			int resourceBarNumberX = originX - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
 			int resourceBarNumberY = originY + number_offset_y;
 
