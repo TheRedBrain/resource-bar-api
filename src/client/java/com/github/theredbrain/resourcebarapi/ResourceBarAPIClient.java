@@ -1,5 +1,6 @@
 package com.github.theredbrain.resourcebarapi;
 
+import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -9,7 +10,6 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,14 +35,14 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int current_value_reduction,
 			int current_value_reservation,
 			ResourceBarAPI.ResourceBarOrigin resource_bar_origin,
-			LinkedHashMap<Integer, Integer> element_offsets_x,
-			LinkedHashMap<Integer, Integer> element_offsets_y,
+			ValidatedMap<Integer, Integer> element_offsets_x,
+			ValidatedMap<Integer, Integer> element_offsets_y,
 			int additional_offset_x,
 			int additional_offset_y,
 			boolean is_centered,
 			Identifier[] texture_ids,
 			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
-			LinkedHashMap<Integer, Integer> background_additional_middle_segment_amounts,
+			ValidatedMap<Integer, Integer> background_additional_middle_segment_amounts,
 			int horizontal_background_left_end_width,
 			int horizontal_background_middle_segment_width,
 			int horizontal_background_right_end_width,
@@ -53,7 +53,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int vertical_background_bottom_end_height,
 			int progress_offset_x,
 			int progress_offset_y,
-			LinkedHashMap<Integer, Integer> progress_additional_middle_segment_amounts,
+			ValidatedMap<Integer, Integer> progress_additional_middle_segment_amounts,
 			int horizontal_progress_left_end_width,
 			int horizontal_progress_middle_segment_width,
 			int horizontal_progress_right_end_width,
@@ -64,7 +64,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int vertical_progress_bottom_end_height,
 			int reserved_offset_x,
 			int reserved_offset_y,
-			LinkedHashMap<Integer, Integer> reserved_additional_middle_segment_amounts,
+			ValidatedMap<Integer, Integer> reserved_additional_middle_segment_amounts,
 			int horizontal_reserved_left_end_width,
 			int horizontal_reserved_middle_segment_width,
 			int horizontal_reserved_right_end_width,
@@ -155,7 +155,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			List<Integer> list = new ArrayList<>(element_offsets_x.keySet());
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
-					element_offset_x = element_offsets_x.get(threshold);
+					element_offset_x = element_offsets_x.getOrDefault(threshold, 0);
 					current_threshold = threshold;
 				}
 			}
@@ -163,7 +163,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
-					element_offset_y = element_offsets_y.get(threshold);
+					element_offset_y = element_offsets_y.getOrDefault(threshold, 0);
 					current_threshold = threshold;
 				}
 			}
@@ -171,7 +171,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
-					backgroundAdditionalMiddleSegmentAmount = background_additional_middle_segment_amounts.get(threshold);
+					backgroundAdditionalMiddleSegmentAmount = background_additional_middle_segment_amounts.getOrDefault(threshold, 0);
 					current_threshold = threshold;
 				}
 			}
@@ -179,7 +179,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
-					progressAdditionalMiddleSegmentAmount = progress_additional_middle_segment_amounts.get(threshold);
+					progressAdditionalMiddleSegmentAmount = progress_additional_middle_segment_amounts.getOrDefault(threshold, 0);
 					current_threshold = threshold;
 				}
 			}
@@ -187,7 +187,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			current_threshold = 0;
 			for (Integer threshold : list) {
 				if (max_value >= threshold && threshold >= current_threshold) {
-					reservedAdditionalMiddleSegmentAmount = reserved_additional_middle_segment_amounts.get(threshold);
+					reservedAdditionalMiddleSegmentAmount = reserved_additional_middle_segment_amounts.getOrDefault(threshold, 0);
 					current_threshold = threshold;
 				}
 			}

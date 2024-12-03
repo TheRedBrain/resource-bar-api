@@ -1,3 +1,7 @@
+# 2.4.0
+
+- added dependency on Fzzy Config
+
 # 2.3.0
 
 - added dynamic element length based on max value (with individual values for background, progress and reserved layer)

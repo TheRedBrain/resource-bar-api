@@ -2,10 +2,7 @@ package com.github.theredbrain.resourcebarapi_test;
 
 import com.github.theredbrain.resourcebarapi.ResourceBarAPIClient;
 import com.github.theredbrain.resourcebarapi_test.config.ClientConfig;
-import com.github.theredbrain.resourcebarapi_test.config.ClientConfigWrapper;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
-import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
+import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ResourceBarAPITestClient implements ClientModInitializer {
-	public static ClientConfig clientConfig;
+	public static ClientConfig clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new);
 
 	private static final Identifier[] TEST_TEXTURES = {
 			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_background_left_end.png"),
@@ -63,9 +60,6 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 	};
 	@Override
 	public void onInitializeClient() {
-		// Config
-		AutoConfig.register(ClientConfigWrapper.class, PartitioningSerializer.wrap(JanksonConfigSerializer::new));
-		clientConfig = ((ClientConfigWrapper) AutoConfig.getConfigHolder(ClientConfigWrapper.class).getConfig()).client;
 
 		HudRenderCallback.EVENT.register((matrixStack, delta) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
