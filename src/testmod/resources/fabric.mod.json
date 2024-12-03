@@ -14,9 +14,6 @@
 		],
 		"client": [
 			"com.github.theredbrain.resourcebarapi_test.ResourceBarAPITestClient"
-		],
-		"modmenu": [
-			"com.github.theredbrain.resourcebarapi_test.compatibility.ModMenuCompatibility"
 		]
 	},
 	"mixins": [],
