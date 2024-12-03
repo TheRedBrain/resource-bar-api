@@ -22,8 +22,8 @@ public class ClientConfig extends Config {
 	public int max_value = 10;
 	@Comment("current_value_reduction")
 	public int current_value_reduction = 0;
-	@Comment("current_value_reservation")
-	public int current_value_reservation = 2;
+	@Comment("current_unreserved_value")
+	public int current_unreserved_value = 2;
 	//@ConfigEntry.Gui.PrefixText
 	@Comment("is_centered")
 	public boolean is_centered = false;

@@ -1,3 +1,7 @@
+# 1.4.1
+
+- fixed reserved value display
+
 # 1.4.0
 
 - added dependency on Fzzy Config
