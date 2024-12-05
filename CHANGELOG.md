@@ -1,3 +1,8 @@
+# 1.5.0
+
+- added API method for clearing the resource bar value cache of a given resource bar
+- resource number rendering is now independent of the resource bar
+
 # 1.4.1
 
 - fixed reserved value display
