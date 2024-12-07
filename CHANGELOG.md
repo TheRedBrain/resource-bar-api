@@ -1,3 +1,14 @@
+# 1.6.0
+
+This is a pretty fundamental rewrite. The initial idea of splitting a bar into three textures per "layer" to allow for easy change of the bar length, came with the cost of massive FPS drops.
+With this rewrite the bar size is no longer changeable with a simple config option. Each 'layer' consists of only 1 texture (which can have configurable dimensions).
+In addition, the texture can be dynamically replaced by another texture (with configurable dimensions) depending on the max value.
+The result of the rewrite is a much, MUCH more optimised API.
+- removed 'is_centered' option, as it was redundant and unnecessarily complicated the calculations.
+- 'fill_direction' no longer chooses between a horizontal and a vertical 'texture set', it only determines the direction from which the bar is filled. This means that changing between horizontal and vertical resource bars also requires a texture change.
+- added the option to display an icon (with configurable texture id and dimensions). This can be toggled independently of the bar and the number.
+- added a server config option to enable debug logs
+
 # 1.5.0
 
 - added API method for clearing the resource bar value cache of a given resource bar

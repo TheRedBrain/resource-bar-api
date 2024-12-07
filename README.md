@@ -8,3 +8,8 @@ This API does not do all the work. All this API does is provide a method that dr
 
 It does not decide under which conditions the element should be rendered. That is the job of the mod using this API.
 This decision was made to ensure maximum flexibility when using this API.
+
+## Using this API
+
+This API is in active development and breaking changes can happen at any time.
+If you have suggestions how to improve this API, please let me know!

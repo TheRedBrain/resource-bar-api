@@ -16,6 +16,11 @@
 			"com.github.theredbrain.resourcebarapi_test.ResourceBarAPITestClient"
 		]
 	},
+	"custom": {
+		"fzzy_config": [
+			"resourcebarapi_test"
+		]
+	},
 	"mixins": [],
 	"depends": {}
 }
