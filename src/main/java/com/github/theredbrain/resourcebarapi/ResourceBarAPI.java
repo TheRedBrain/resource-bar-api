@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class ResourceBarAPI implements ModInitializer {
 	public static final String MOD_ID = "resourcebarapi";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static ServerConfig SERVER_CONFIG = ConfigApiJava.registerAndLoadConfig(ServerConfig::new, RegisterType.CLIENT);
+	public static ServerConfig SERVER_CONFIG = ConfigApiJava.registerAndLoadConfig(ServerConfig::new);
 
 	@Override
 	public void onInitialize() {

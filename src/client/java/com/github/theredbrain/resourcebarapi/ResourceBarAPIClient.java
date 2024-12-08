@@ -539,7 +539,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 			// reserved
 			if (normalizedReservedResourceRatio > 0) {
-				client.getProfiler().swap(identifier_string + "_reserved");
 				int reservedElementX = elementX + reserved_offset_x;
 				int reservedElementY = elementY + reserved_offset_y;
 				drawResourceBarDynamicFourDirectionalLayer(
