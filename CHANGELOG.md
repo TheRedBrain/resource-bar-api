@@ -1,3 +1,7 @@
+# 1.6.2
+
+- fixed some other wrong calculations
+
 # 1.6.1
 
 - fixed some wrong calculations

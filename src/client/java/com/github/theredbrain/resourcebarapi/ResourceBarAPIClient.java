@@ -679,12 +679,12 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 			// 1: bottom to top
 
-			context.drawTexture(texture_id, layer_x, layer_y + end_display, 0, end_display, texture_width, end_display - start_display, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x, layer_y + texture_height - end_display, 0, texture_height - end_display, texture_width, end_display - start_display, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 			// 2: right to left
 
-			context.drawTexture(texture_id, layer_x + end_display, layer_y, end_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x + texture_width - end_display, layer_y, texture_width - end_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			// 3: top to bottom
