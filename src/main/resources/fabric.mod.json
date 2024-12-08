@@ -21,13 +21,12 @@
 			"com.github.theredbrain.resourcebarapi.ResourceBarAPIClient"
 		]
 	},
-	"mixins": [
-		"resourcebarapi.mixins.json",
-		{
-			"config": "resourcebarapi.client.mixins.json",
-			"environment": "client"
-		}
-	],
+	"custom": {
+		"fzzy_config": [
+			"resourcebarapi"
+		]
+	},
+	"mixins": [],
 	"depends": {
 		"minecraft": "${minecraft_version}",
 		"fabricloader": ">=${loader_version}",

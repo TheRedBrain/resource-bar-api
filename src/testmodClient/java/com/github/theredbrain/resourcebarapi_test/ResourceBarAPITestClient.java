@@ -2,7 +2,9 @@ package com.github.theredbrain.resourcebarapi_test;
 
 import com.github.theredbrain.resourcebarapi.ResourceBarAPIClient;
 import com.github.theredbrain.resourcebarapi_test.config.ClientConfig;
+import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
+import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -10,74 +12,49 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ResourceBarAPITestClient implements ClientModInitializer {
-	public static ClientConfig clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new);
-
-	private static final Identifier[] TEST_TEXTURES = {
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_background_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_background_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_background_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_background_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_background_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_background_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_decrease_animation_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_decrease_animation_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_decrease_animation_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_value_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_value_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_value_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_value_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_value_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_value_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_animation_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_animation_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_progress_increase_animation_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_reserved_left_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_reserved_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_reserved_right_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_reserved_top_end.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_reserved_middle_segment.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_reserved_bottom_end.png"),
-
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
-			ResourceBarAPITest.identifier("textures/gui/sprites/hud/vertical_stamina_overlay.png")
-	};
+	public static ClientConfig clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
+	private static final String RESOURCE_BAR_IDENTIFIER_STRING = ResourceBarAPITest.MOD_ID + ":test";
 
 	@Override
 	public void onInitializeClient() {
-
 		HudRenderCallback.EVENT.register((matrixStack, delta) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			PlayerEntity playerEntity = minecraftClient.player;
-			ClientConfig clientConfig = ResourceBarAPITestClient.clientConfig;
-
 			if (playerEntity != null) {
-
 				int currentValue = clientConfig.current_value;
 				int maxValue = clientConfig.max_value;
-
 				ResourceBarAPIClient.drawResourceBar(
 						minecraftClient,
 						minecraftClient.textRenderer,
 						matrixStack,
-						ResourceBarAPITest.MOD_ID + ":test",
-						new double[]{-1, -1, 0, 0, 0, 0, 0, 0},
+						RESOURCE_BAR_IDENTIFIER_STRING,
+						new double[]{
+								-1,
+								-1,
+								0,
+								-91,
+								-45,
+								5,
+								182,
+								5,
+								182,
+								5,
+								182,
+								5,
+								5,
+								16,
+								16
+						},
+						new Identifier[]{
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
+								null
+						},
 						clientConfig.show_resource_bar && maxValue > 0 && (currentValue < maxValue || clientConfig.show_full_resource_bar),
 						currentValue,
 						maxValue,
@@ -88,47 +65,35 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 						clientConfig.offsets_y,
 						0,
 						0,
-						clientConfig.is_centered,
-						TEST_TEXTURES,
 						clientConfig.fill_direction,
-						clientConfig.background_middle_segment_amounts,
-						clientConfig.horizontal_background_left_end_width,
-						clientConfig.horizontal_background_middle_segment_width,
-						clientConfig.horizontal_background_right_end_width,
-						clientConfig.horizontal_background_height,
-						clientConfig.vertical_background_width,
-						clientConfig.vertical_background_top_end_height,
-						clientConfig.vertical_background_middle_segment_height,
-						clientConfig.vertical_background_bottom_end_height,
+						clientConfig.background_texture_heights,
+						clientConfig.background_texture_widths,
+						clientConfig.background_texture_ids,
 						clientConfig.progress_offset_x,
 						clientConfig.progress_offset_y,
-						clientConfig.progress_middle_segment_amounts,
-						clientConfig.horizontal_progress_left_end_width,
-						clientConfig.horizontal_progress_middle_segment_width,
-						clientConfig.horizontal_progress_right_end_width,
-						clientConfig.horizontal_progress_height,
-						clientConfig.vertical_progress_width,
-						clientConfig.vertical_progress_top_end_height,
-						clientConfig.vertical_progress_middle_segment_height,
-						clientConfig.vertical_progress_bottom_end_height,
+						clientConfig.progress_texture_heights,
+						clientConfig.progress_texture_widths,
+						clientConfig.progress_decrease_animation_texture_ids,
+						clientConfig.progress_increase_animation_texture_ids,
+						clientConfig.progress_increase_value_texture_ids,
+						clientConfig.progress_texture_ids,
 						clientConfig.reserved_offset_x,
 						clientConfig.reserved_offset_y,
-						clientConfig.reserved_middle_segment_amounts,
-						clientConfig.horizontal_reserved_left_end_width,
-						clientConfig.horizontal_reserved_middle_segment_width,
-						clientConfig.horizontal_reserved_right_end_width,
-						clientConfig.horizontal_reserved_height,
-						clientConfig.vertical_reserved_width,
-						clientConfig.vertical_reserved_top_end_height,
-						clientConfig.vertical_reserved_middle_segment_height,
-						clientConfig.vertical_reserved_bottom_end_height,
+						clientConfig.reserved_texture_heights,
+						clientConfig.reserved_texture_widths,
+						clientConfig.reserved_texture_ids,
 						clientConfig.show_current_value_overlay,
 						clientConfig.overlay_offset_x,
 						clientConfig.overlay_offset_y,
-						clientConfig.horizontal_overlay_width,
-						clientConfig.horizontal_overlay_height,
-						clientConfig.vertical_overlay_width,
-						clientConfig.vertical_overlay_height,
+						clientConfig.overlay_texture_heights,
+						clientConfig.overlay_texture_widths,
+						clientConfig.overlay_texture_ids,
+						clientConfig.show_icon && maxValue > 0,
+						clientConfig.icon_offset_x,
+						clientConfig.icon_offset_y,
+						clientConfig.icon_texture_heights,
+						clientConfig.icon_texture_widths,
+						clientConfig.icon_texture_ids,
 						clientConfig.enable_smooth_animation,
 						clientConfig.animation_interval,
 						clientConfig.max_value_change_is_animated,
@@ -138,6 +103,39 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 						clientConfig.number_offset_y,
 						clientConfig.number_color
 				);
+			}
+		});
+		ConfigApi.event().onUpdateClient((identifier, config) -> {
+			if (identifier.equals(Identifier.of(ResourceBarAPITest.MOD_ID, "client"))) {
+				ResourceBarAPIClient.clearCache(
+						RESOURCE_BAR_IDENTIFIER_STRING,
+						new double[]{
+								-1,
+								-1,
+								0,
+								-91,
+								-45,
+								5,
+								182,
+								5,
+								182,
+								5,
+								182,
+								5,
+								5,
+								16,
+								16
+						},
+						new Identifier[]{
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
+								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
+								null
+						});
 			}
 		});
 	}
