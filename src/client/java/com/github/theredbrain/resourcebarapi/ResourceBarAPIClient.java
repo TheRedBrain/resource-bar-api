@@ -419,11 +419,11 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int elementY = originY + element_offset_y + additional_offset_y;
 
 			// background
-			if (background_texture_id != null) {
+			if (background_texture_id == null) {
 				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
 					ResourceBarAPI.LOGGER.info("background texture id == null");
 				}
-			} else if (background_texture_width > 0 && background_texture_height > 0) {
+			} else if (background_texture_width <= 0 && background_texture_height <= 0) {
 				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
 					ResourceBarAPI.LOGGER.info("invalid background texture dimensions");
 				}
@@ -546,12 +546,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 						context,
 						reserved_texture_id,
 						identifier_string + "_reserved",
-						getOppositeFillDirection(resource_bar_fill_direction),
+//						getOppositeFillDirection(resource_bar_fill_direction),
+						resource_bar_fill_direction,
 						reservedElementX,
 						reservedElementY,
 						reserved_texture_width,
 						reserved_texture_height,
-						normalizedReservedResourceRatio,
+						reservedBarLength - normalizedReservedResourceRatio,
 						reservedBarLength
 				);
 			}
@@ -616,7 +617,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int displayed_current_value = (int) Math.round(current_value);
 			int displayed_max_value = (int) Math.round(max_value);
 			int displayed_current_unreserved_value = (int) Math.round(current_unreserved_value);
-			String resourceBarNumberString = show_max_value ? (current_unreserved_value > 0 ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
+			String resourceBarNumberString = show_max_value ? (current_unreserved_value < max_value ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
 			int resourceBarNumberX = originX - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
 			int resourceBarNumberY = originY + number_offset_y;
 
@@ -678,22 +679,22 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 			// 1: bottom to top
 
-			context.drawTexture(texture_id, layer_x, layer_y + end_display, 0, end_display, texture_width, texture_height - end_display - start_display, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x, layer_y + end_display, 0, end_display, texture_width, end_display - start_display, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 			// 2: right to left
 
-			context.drawTexture(texture_id, layer_x + end_display, layer_y, end_display, 0, texture_width - end_display - start_display, texture_height, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x + end_display, layer_y, end_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			// 3: top to bottom
 
-			context.drawTexture(texture_id, layer_x, layer_y + start_display, 0, start_display, texture_width, texture_height - start_display - end_display, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x, layer_y + start_display, 0, start_display, texture_width, end_display - start_display, texture_width, texture_height);
 
 		} else {
 			// 0: left to right
 
-			context.drawTexture(texture_id, layer_x + start_display, layer_y, start_display, 0, texture_width - start_display - end_display, texture_height, texture_width, texture_height);
+			context.drawTexture(texture_id, layer_x + start_display, layer_y, start_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
 
 		}
 		client.getProfiler().pop();
