@@ -1,4 +1,4 @@
-# 2.8.0
+# 2.6.0
 
 This is a pretty fundamental rewrite. The initial idea of splitting a bar into three textures per "layer" to allow for easy change of the bar length, came with the cost of massive FPS drops.
 With this rewrite the bar size is no longer changeable with a simple config option. Each 'layer' consists of only 1 texture (which can have configurable dimensions).
