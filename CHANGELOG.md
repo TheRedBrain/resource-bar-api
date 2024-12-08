@@ -1,3 +1,7 @@
+# 2.6.1
+
+- fixed some wrong calculations
+
 # 2.6.0
 
 This is a pretty fundamental rewrite. The initial idea of splitting a bar into three textures per "layer" to allow for easy change of the bar length, came with the cost of massive FPS drops.
