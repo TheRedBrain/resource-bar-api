@@ -63,7 +63,5 @@ public class ResourceBarAPI implements ModInitializer {
 			Identifier container_texture_id,
 			Identifier full_texture_id,
 			Identifier half_texture_id
-	) {
-
-	}
+	) {}
 }

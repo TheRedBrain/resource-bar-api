@@ -16,11 +16,13 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import java.util.ArrayList;
 
 public class ResourceBarAPITestClient implements ClientModInitializer {
-	public static ClientConfig clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
+	public static ClientConfig clientConfig;
 	private static final String RESOURCE_BAR_IDENTIFIER_STRING = ResourceBarAPITest.MOD_ID + ":test";
 
 	@Override
 	public void onInitializeClient() {
+		clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
+
 		HudRenderCallback.EVENT.register((matrixStack, delta) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			PlayerEntity playerEntity = minecraftClient.player;

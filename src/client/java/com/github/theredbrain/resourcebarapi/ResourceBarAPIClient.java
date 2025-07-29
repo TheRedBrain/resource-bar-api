@@ -55,33 +55,35 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		    	they can be used for absorption, reserved resources, etc
 		    	the list elements contain value, texture ids
 		 */
-		int i = (int) (max_value + 0.5F) / 2;
+//		int arraySize = additional_prefix_values.size() + 1 + additional_affix_values.size();
+//		int[] array = new int[arraySize];
+//		int[] array2 = new int[]{additional_prefix_values.size(), additional_prefix_values.size() + 1, arraySize};
+//		int offset = 0;
+//		int pivot = additional_prefix_values.size();
+//		for (int k = 0; k < arraySize; k++) {
+//			if (k + 1 - offset <= pivot) {
+//
+//			}
+//		}
+		int i = (int) (max_value + 0.5F) / 2; // total icon amount iterator
 		if (i != 0) {
 			client.getProfiler().push(identifier_string);
-			int bar_y;
-			int bar_x;
-
-			bar_y = origin_y + offset_y;
-			bar_x = origin_x + offset_x;
+			int bar_y = origin_y + offset_y;
+			int bar_x = origin_x + offset_x;
 
 			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.LEFT_TO_RIGHT) {
 
 				int m = bar_y;
-				int n = 0;
+				int n = 0; // offset for additional bars beyond the first
 				RenderSystem.enableBlend();
 
 				while (i > 0) {
-					int o = Math.min(i, max_icon_amount_per_bar);
+					int o = Math.min(i, max_icon_amount_per_bar); // current bar value
 					i -= o;
 
 					for (int p = 0; p < o; ++p) {
-						int q;
-//						if (reverse_single_bar_fill_direction) {
-//							q = bar_x + (p - max_icon_amount_per_bar) * 8;
-//						} else {
-						q = bar_x + p * 8;
-//						}
-//						int q = bar_x - p * 8 - 9;
+						int q = bar_x + p * 8;
+
 						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
 						if (p * 2 + 1 + n < current_value) {
 							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
@@ -135,8 +137,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				RenderSystem.disableBlend();
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 
-//				int m = bar_y;
-//				int n = 0;
 				int n = bar_x;
 				int m = 0;
 				RenderSystem.enableBlend();
@@ -146,17 +146,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					i -= o;
 
 					for (int p = 0; p < o; ++p) {
-//						int q = bar_x - p * 8 - 9;
 						int q = bar_y + p * 8;
-
-//						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
-//						if (p * 2 + 1 + n < j) {
-//							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
-//						}
-//
-//						if (p * 2 + 1 + n == j) {
-//							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
-//						}
 
 						context.drawGuiTexture(container_texture_id, n, q, 9, 9);
 						if (p * 2 + 1 + m < current_value) {
@@ -169,21 +159,16 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					}
 
 					if (reverse_stack_direction) {
-//						m -= 10;
 						n -= 10;
 					} else {
-//						m += 10;
 						n += 10;
 					}
-//					n += max_icon_amount_per_bar * 2;
 					m += max_icon_amount_per_bar * 2;
 				}
 
 				RenderSystem.disableBlend();
 			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 
-//				int m = bar_y;
-//				int n = 0;
 				int n = bar_x;
 				int m = 0;
 				RenderSystem.enableBlend();
@@ -193,17 +178,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					i -= o;
 
 					for (int p = 0; p < o; ++p) {
-//						int q = bar_x - p * 8 - 9;
 						int q = bar_y - p * 8 - 9;
-
-//						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
-//						if (p * 2 + 1 + n < j) {
-//							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
-//						}
-//
-//						if (p * 2 + 1 + n == j) {
-//							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
-//						}
 
 						context.drawGuiTexture(container_texture_id, n, q, 9, 9);
 						if (p * 2 + 1 + m < current_value) {
@@ -216,13 +191,10 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					}
 
 					if (reverse_stack_direction) {
-//						m -= 10;
 						n -= 10;
 					} else {
-//						m += 10;
 						n += 10;
 					}
-//					n += max_icon_amount_per_bar * 2;
 					m += max_icon_amount_per_bar * 2;
 				}
 
