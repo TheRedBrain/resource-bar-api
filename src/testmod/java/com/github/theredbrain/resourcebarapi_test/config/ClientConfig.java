@@ -15,7 +15,6 @@ public class ClientConfig extends Config {
 		super(ResourceBarAPITest.identifier("client"));
 	}
 
-	public boolean show_resource_bar = true;
 	public boolean show_full_resource_bar = true;
 
 	public int current_value = 5;
@@ -23,7 +22,15 @@ public class ClientConfig extends Config {
 	public int current_value_reduction = 0;
 	public int current_unreserved_value = 2;
 
+	public ResourceBarAPI.ResourceBarDisplay resource_bar_display = ResourceBarAPI.ResourceBarDisplay.NONE;
+
 	public ResourceBarAPI.ResourceBarOrigin origin = ResourceBarAPI.ResourceBarOrigin.BOTTOM_MIDDLE;
+
+	public int icon_bar_offset_x = 0;
+	public int icon_bar_offset_y = 0;
+	public boolean reverse_stack_direction = true;
+	public boolean reverse_single_bar_fill_direction = true;
+	public int max_icon_amount_per_bar = 10;
 
 	public ValidatedMap<Integer, Integer> offsets_x = new ValidatedMap<>(new HashMap<>() {{
 		put(0, -91);

@@ -47,4 +47,23 @@ public class ResourceBarAPI implements ModInitializer {
 		ResourceBarOrigin() {
 		}
 	}
+
+	public enum ResourceBarDisplay {
+		ICON,
+		SMOOTH,
+		NONE;
+
+		ResourceBarDisplay() {
+		}
+	}
+
+	public record AdditionalIconType(
+			double current_value,
+			double max_value,
+			Identifier container_texture_id,
+			Identifier full_texture_id,
+			Identifier half_texture_id
+	) {
+
+	}
 }

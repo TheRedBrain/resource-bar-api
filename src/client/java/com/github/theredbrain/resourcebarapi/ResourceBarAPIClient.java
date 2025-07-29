@@ -1,11 +1,13 @@
 package com.github.theredbrain.resourcebarapi;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,19 +31,219 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		CACHED_RESOURCE_BAR_TEXTURE_IDS.put(identifier_string, cached_textures_default);
 	}
 
-	public static void drawResourceBar(
+	public static void drawIconResourceBar(
 			MinecraftClient client,
-			TextRenderer textRenderer,
+			DrawContext context,
+			String identifier_string,
+			double current_value,
+			double max_value,
+			Identifier container_texture_id,
+			Identifier full_texture_id,
+			Identifier half_texture_id,
+			List<ResourceBarAPI.AdditionalIconType> additional_affix_values,
+			List<ResourceBarAPI.AdditionalIconType> additional_prefix_values,
+			int origin_x,
+			int origin_y,
+			int offset_x,
+			int offset_y,
+			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
+			boolean reverse_stack_direction,
+			int max_icon_amount_per_bar
+	) {
+
+		/* TODO - have pre and suffix value lists
+		    	they can be used for absorption, reserved resources, etc
+		    	the list elements contain value, texture ids
+		 */
+		int i = (int) (max_value + 0.5F) / 2;
+		if (i != 0) {
+			client.getProfiler().push(identifier_string);
+			int bar_y;
+			int bar_x;
+
+			bar_y = origin_y + offset_y;
+			bar_x = origin_x + offset_x;
+
+			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.LEFT_TO_RIGHT) {
+
+				int m = bar_y;
+				int n = 0;
+				RenderSystem.enableBlend();
+
+				while (i > 0) {
+					int o = Math.min(i, max_icon_amount_per_bar);
+					i -= o;
+
+					for (int p = 0; p < o; ++p) {
+						int q;
+//						if (reverse_single_bar_fill_direction) {
+//							q = bar_x + (p - max_icon_amount_per_bar) * 8;
+//						} else {
+						q = bar_x + p * 8;
+//						}
+//						int q = bar_x - p * 8 - 9;
+						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
+						if (p * 2 + 1 + n < current_value) {
+							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
+						}
+
+						if (p * 2 + 1 + n == current_value) {
+							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
+						}
+					}
+
+					if (reverse_stack_direction) {
+						m -= 10;
+					} else {
+						m += 10;
+					}
+					n += max_icon_amount_per_bar * 2;
+				}
+
+				RenderSystem.disableBlend();
+			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
+
+				int m = bar_y;
+				int n = 0;
+				RenderSystem.enableBlend();
+
+				while (i > 0) {
+					int o = Math.min(i, max_icon_amount_per_bar);
+					i -= o;
+
+					for (int p = 0; p < o; ++p) {
+						int q = bar_x - p * 8 - 9;
+
+						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
+						if (p * 2 + 1 + n < current_value) {
+							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
+						}
+
+						if (p * 2 + 1 + n == current_value) {
+							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
+						}
+					}
+
+					if (reverse_stack_direction) {
+						m -= 10;
+					} else {
+						m += 10;
+					}
+					n += max_icon_amount_per_bar * 2;
+				}
+
+				RenderSystem.disableBlend();
+			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
+
+//				int m = bar_y;
+//				int n = 0;
+				int n = bar_x;
+				int m = 0;
+				RenderSystem.enableBlend();
+
+				while (i > 0) {
+					int o = Math.min(i, max_icon_amount_per_bar);
+					i -= o;
+
+					for (int p = 0; p < o; ++p) {
+//						int q = bar_x - p * 8 - 9;
+						int q = bar_y + p * 8;
+
+//						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
+//						if (p * 2 + 1 + n < j) {
+//							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
+//						}
+//
+//						if (p * 2 + 1 + n == j) {
+//							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
+//						}
+
+						context.drawGuiTexture(container_texture_id, n, q, 9, 9);
+						if (p * 2 + 1 + m < current_value) {
+							context.drawGuiTexture(full_texture_id, n, q, 9, 9);
+						}
+
+						if (p * 2 + 1 + m == current_value) {
+							context.drawGuiTexture(half_texture_id, n, q, 9, 9);
+						}
+					}
+
+					if (reverse_stack_direction) {
+//						m -= 10;
+						n -= 10;
+					} else {
+//						m += 10;
+						n += 10;
+					}
+//					n += max_icon_amount_per_bar * 2;
+					m += max_icon_amount_per_bar * 2;
+				}
+
+				RenderSystem.disableBlend();
+			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
+
+//				int m = bar_y;
+//				int n = 0;
+				int n = bar_x;
+				int m = 0;
+				RenderSystem.enableBlend();
+
+				while (i > 0) {
+					int o = Math.min(i, max_icon_amount_per_bar);
+					i -= o;
+
+					for (int p = 0; p < o; ++p) {
+//						int q = bar_x - p * 8 - 9;
+						int q = bar_y - p * 8 - 9;
+
+//						context.drawGuiTexture(container_texture_id, q, m, 9, 9);
+//						if (p * 2 + 1 + n < j) {
+//							context.drawGuiTexture(full_texture_id, q, m, 9, 9);
+//						}
+//
+//						if (p * 2 + 1 + n == j) {
+//							context.drawGuiTexture(half_texture_id, q, m, 9, 9);
+//						}
+
+						context.drawGuiTexture(container_texture_id, n, q, 9, 9);
+						if (p * 2 + 1 + m < current_value) {
+							context.drawGuiTexture(full_texture_id, n, q, 9, 9);
+						}
+
+						if (p * 2 + 1 + m == current_value) {
+							context.drawGuiTexture(half_texture_id, n, q, 9, 9);
+						}
+					}
+
+					if (reverse_stack_direction) {
+//						m -= 10;
+						n -= 10;
+					} else {
+//						m += 10;
+						n += 10;
+					}
+//					n += max_icon_amount_per_bar * 2;
+					m += max_icon_amount_per_bar * 2;
+				}
+
+				RenderSystem.disableBlend();
+			}
+			client.getProfiler().pop();
+		}
+	}
+
+	public static void drawSmoothResourceBar(
+			MinecraftClient client,
 			DrawContext context,
 			String identifier_string,
 			double[] cached_values_default,
 			Identifier[] cached_texture_ids_default,
-			boolean should_resource_bar_be_rendered,
 			double current_value,
 			double max_value,
 			int current_value_reduction,
 			double current_unreserved_value,
-			ResourceBarAPI.ResourceBarOrigin resource_bar_origin,
+			int origin_x,
+			int origin_y,
 			ValidatedMap<Integer, Integer> element_offsets_x,
 			ValidatedMap<Integer, Integer> element_offsets_y,
 			int additional_offset_x,
@@ -77,12 +279,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ValidatedMap<Integer, Identifier> icon_texture_ids,
 			boolean enable_smooth_animation,
 			int animation_interval,
-			boolean max_value_change_is_animated,
-			boolean show_number,
-			boolean show_max_value,
-			int number_offset_x,
-			int number_offset_y,
-			int resource_bar_number_color
+			boolean max_value_change_is_animated
 	) {
 
 		if (cached_values_default.length != CACHED_VALUE_ARRAY_LENGTH) {
@@ -100,39 +297,6 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 		int progressBarLength;
 		int reservedBarLength;
-
-		//region origin
-		int originX;
-		int originY;
-		if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.TOP_MIDDLE) {
-			originX = context.getScaledWindowWidth() / 2;
-			originY = 0;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.TOP_RIGHT) {
-			originX = context.getScaledWindowWidth();
-			originY = 0;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_LEFT) {
-			originX = 0;
-			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_MIDDLE) {
-			originX = context.getScaledWindowWidth() / 2;
-			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_RIGHT) {
-			originX = context.getScaledWindowWidth();
-			originY = context.getScaledWindowHeight() / 2;
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_LEFT) {
-			originX = 0;
-			originY = context.getScaledWindowHeight();
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_MIDDLE) {
-			originX = context.getScaledWindowWidth() / 2;
-			originY = context.getScaledWindowHeight();
-		} else if (resource_bar_origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_RIGHT) {
-			originX = context.getScaledWindowWidth();
-			originY = context.getScaledWindowHeight();
-		} else {
-			originX = 0;
-			originY = 0;
-		}
-		//endregion origin
 
 		//region cache
 		double[] cachedValues = CACHED_RESOURCE_BAR_VALUES.getOrDefault(identifier_string, cached_values_default);
@@ -414,118 +578,65 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		});
 		//endregion cache
 
-		if (should_resource_bar_be_rendered) {
-			int elementX = originX + element_offset_x + additional_offset_x;
-			int elementY = originY + element_offset_y + additional_offset_y;
+		int elementX = origin_x + element_offset_x + additional_offset_x;
+		int elementY = origin_y + element_offset_y + additional_offset_y;
 
-			// background
-			if (background_texture_id == null) {
-				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
-					ResourceBarAPI.LOGGER.info("background texture id == null");
-				}
-			} else if (background_texture_width <= 0 && background_texture_height <= 0) {
-				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
-					ResourceBarAPI.LOGGER.info("invalid background texture dimensions");
-				}
-			} else {
-
-				client.getProfiler().push(identifier_string + "_background");
-				context.drawTexture(
-						background_texture_id,
-						elementX,
-						elementY,
-						0,
-						0,
-						background_texture_width,
-						background_texture_height,
-						background_texture_width,
-						background_texture_height
-				);
+		// background
+		if (background_texture_id == null) {
+			if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
+				ResourceBarAPI.LOGGER.info("background texture id == null");
 			}
-			client.getProfiler().pop();
+		} else if (background_texture_width <= 0 && background_texture_height <= 0) {
+			if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
+				ResourceBarAPI.LOGGER.info("invalid background texture dimensions");
+			}
+		} else {
 
-			// progress
-			int progressElementX = elementX + progress_offset_x;
-			int progressElementY = elementY + progress_offset_y;
-			if (enable_smooth_animation) {
-				if (reduceOldRatio) {
+			client.getProfiler().push(identifier_string + "_background");
+			context.drawTexture(
+					background_texture_id,
+					elementX,
+					elementY,
+					0,
+					0,
+					background_texture_width,
+					background_texture_height,
+					background_texture_width,
+					background_texture_height
+			);
+		}
+		client.getProfiler().pop();
 
-					// animation layer
-					if (oldNormalizedResourceRatio > 0) {
-						drawResourceBarDynamicFourDirectionalLayer(
-								client,
-								context,
-								progress_decrease_animation_texture_id,
-								identifier_string + "_reduce_animation",
-								resource_bar_fill_direction,
-								progressElementX,
-								progressElementY,
-								progress_texture_width,
-								progress_texture_height,
-								normalizedResourceRatio,
-								oldNormalizedResourceRatio
-						);
-					}
+		// progress
+		int progressElementX = elementX + progress_offset_x;
+		int progressElementY = elementY + progress_offset_y;
+		if (enable_smooth_animation) {
+			if (reduceOldRatio) {
 
-					// current value layer
-					if (normalizedResourceRatio > 0) {
-						drawResourceBarDynamicFourDirectionalLayer(
-								client,
-								context,
-								progress_texture_id,
-								identifier_string + "_reduce_value",
-								resource_bar_fill_direction,
-								progressElementX,
-								progressElementY,
-								progress_texture_width,
-								progress_texture_height,
-								0,
-								normalizedResourceRatio
-						);
-					}
-				} else {
-
-					// current value layer
-					if (normalizedResourceRatio > 0) {
-						drawResourceBarDynamicFourDirectionalLayer(
-								client,
-								context,
-								progress_increase_value_texture_id,
-								identifier_string + "_increase_value",
-								resource_bar_fill_direction,
-								progressElementX,
-								progressElementY,
-								progress_texture_width,
-								progress_texture_height,
-								oldNormalizedResourceRatio,
-								normalizedResourceRatio
-						);
-					}
-
-					// animation layer
-					if (oldNormalizedResourceRatio > 0) {
-						drawResourceBarDynamicFourDirectionalLayer(
-								client,
-								context,
-								progress_increase_animation_texture_id,
-								identifier_string + "_increase_animation",
-								resource_bar_fill_direction,
-								progressElementX,
-								progressElementY,
-								progress_texture_width,
-								progress_texture_height,
-								0,
-								oldNormalizedResourceRatio
-						);
-					}
+				// animation layer
+				if (oldNormalizedResourceRatio > 0) {
+					drawResourceBarDynamicFourDirectionalLayer(
+							client,
+							context,
+							progress_decrease_animation_texture_id,
+							identifier_string + "_reduce_animation",
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							progress_texture_width,
+							progress_texture_height,
+							normalizedResourceRatio,
+							oldNormalizedResourceRatio
+					);
 				}
-			} else {
+
+				// current value layer
 				if (normalizedResourceRatio > 0) {
 					drawResourceBarDynamicFourDirectionalLayer(
 							client,
 							context,
 							progress_texture_id,
-							identifier_string + "_progress_no_animation",
+							identifier_string + "_reduce_value",
 							resource_bar_fill_direction,
 							progressElementX,
 							progressElementY,
@@ -535,65 +646,115 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 							normalizedResourceRatio
 					);
 				}
-			}
+			} else {
 
-			// reserved
-			if (normalizedReservedResourceRatio > 0) {
-				int reservedElementX = elementX + reserved_offset_x;
-				int reservedElementY = elementY + reserved_offset_y;
+				// current value layer
+				if (normalizedResourceRatio > 0) {
+					drawResourceBarDynamicFourDirectionalLayer(
+							client,
+							context,
+							progress_increase_value_texture_id,
+							identifier_string + "_increase_value",
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							progress_texture_width,
+							progress_texture_height,
+							oldNormalizedResourceRatio,
+							normalizedResourceRatio
+					);
+				}
+
+				// animation layer
+				if (oldNormalizedResourceRatio > 0) {
+					drawResourceBarDynamicFourDirectionalLayer(
+							client,
+							context,
+							progress_increase_animation_texture_id,
+							identifier_string + "_increase_animation",
+							resource_bar_fill_direction,
+							progressElementX,
+							progressElementY,
+							progress_texture_width,
+							progress_texture_height,
+							0,
+							oldNormalizedResourceRatio
+					);
+				}
+			}
+		} else {
+			if (normalizedResourceRatio > 0) {
 				drawResourceBarDynamicFourDirectionalLayer(
 						client,
 						context,
-						reserved_texture_id,
-						identifier_string + "_reserved",
-//						getOppositeFillDirection(resource_bar_fill_direction),
+						progress_texture_id,
+						identifier_string + "_progress_no_animation",
 						resource_bar_fill_direction,
-						reservedElementX,
-						reservedElementY,
-						reserved_texture_width,
-						reserved_texture_height,
-						reservedBarLength - normalizedReservedResourceRatio,
-						reservedBarLength
+						progressElementX,
+						progressElementY,
+						progress_texture_width,
+						progress_texture_height,
+						0,
+						normalizedResourceRatio
 				);
 			}
+		}
 
-			// overlay
-			if (show_current_value_overlay && normalizedResourceRatio > 0) {
-				if (overlay_texture_id == null) {
-					if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
-						ResourceBarAPI.LOGGER.info("overlay texture id == null");
+		// reserved
+		if (normalizedReservedResourceRatio > 0) {
+			int reservedElementX = elementX + reserved_offset_x;
+			int reservedElementY = elementY + reserved_offset_y;
+			drawResourceBarDynamicFourDirectionalLayer(
+					client,
+					context,
+					reserved_texture_id,
+					identifier_string + "_reserved",
+					resource_bar_fill_direction,
+					reservedElementX,
+					reservedElementY,
+					reserved_texture_width,
+					reserved_texture_height,
+					reservedBarLength - normalizedReservedResourceRatio,
+					reservedBarLength
+			);
+		}
+
+		// overlay
+		if (show_current_value_overlay && normalizedResourceRatio > 0) {
+			if (overlay_texture_id == null) {
+				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
+					ResourceBarAPI.LOGGER.info("overlay texture id == null");
+				}
+			} else if (overlay_texture_width <= 0 || overlay_texture_height <= 0) {
+				if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
+					ResourceBarAPI.LOGGER.info("invalid overlay texture dimensions");
+				}
+			} else {
+				client.getProfiler().push(identifier_string + "_overlay");
+				int overlayElementX = progressElementX + overlay_offset_x;
+				int overlayElementY = progressElementY + overlay_offset_y;
+				if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
+					// 1: bottom to top
+					if (current_value > 0 && current_value < max_value) {
+						context.drawTexture(overlay_texture_id, overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
-				} else if (overlay_texture_width <= 0 || overlay_texture_height <= 0) {
-					if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
-						ResourceBarAPI.LOGGER.info("invalid overlay texture dimensions");
+				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
+					// 2: right to left
+					if (current_value > 0 && current_value < max_value) {
+						context.drawTexture(overlay_texture_id, overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
+					}
+				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
+					// 3: top to bottom
+					if (current_value > 0 && current_value < max_value) {
+						context.drawTexture(overlay_texture_id, overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
 				} else {
-					client.getProfiler().push(identifier_string + "_overlay");
-					int overlayElementX = progressElementX + overlay_offset_x;
-					int overlayElementY = progressElementY + overlay_offset_y;
-					if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
-						// 1: bottom to top
-						if (current_value > 0 && current_value < max_value) {
-							context.drawTexture(overlay_texture_id, overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
-						}
-					} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
-						// 2: right to left
-						if (current_value > 0 && current_value < max_value) {
-							context.drawTexture(overlay_texture_id, overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
-						}
-					} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
-						// 3: top to bottom
-						if (current_value > 0 && current_value < max_value) {
-							context.drawTexture(overlay_texture_id, overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
-						}
-					} else {
-						// 0: left to right
-						if (current_value > 0 && current_value < max_value) {
-							context.drawTexture(overlay_texture_id, overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
-						}
+					// 0: left to right
+					if (current_value > 0 && current_value < max_value) {
+						context.drawTexture(overlay_texture_id, overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
-					client.getProfiler().pop();
 				}
+				client.getProfiler().pop();
 			}
 		}
 
@@ -608,29 +769,44 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				}
 			} else {
 				client.getProfiler().push(identifier_string + "_icon");
-				context.drawTexture(icon_texture_id, originX + icon_offset_x, originY + icon_offset_y, 0, 0, icon_texture_width, icon_texture_height, icon_texture_width, icon_texture_height);
+				context.drawTexture(icon_texture_id, origin_x + icon_offset_x, origin_y + icon_offset_y, 0, 0, icon_texture_width, icon_texture_height, icon_texture_width, icon_texture_height);
 				client.getProfiler().pop();
 			}
 		}
+	}
 
-		if (show_number) {
-			int displayed_current_value = (int) Math.round(current_value);
-			int displayed_max_value = (int) Math.round(max_value);
-			int displayed_current_unreserved_value = (int) Math.round(current_unreserved_value);
-			String resourceBarNumberString = show_max_value ? (current_unreserved_value < max_value ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
-			int resourceBarNumberX = originX - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
-			int resourceBarNumberY = originY + number_offset_y;
+	public static void drawResourceNumber(
+			MinecraftClient client,
+			TextRenderer textRenderer,
+			DrawContext context,
+			String identifier_string,
+			double current_value,
+			double max_value,
+			double current_unreserved_value,
+			int origin_x,
+			int origin_y,
+			boolean show_max_value,
+			int number_offset_x,
+			int number_offset_y,
+			int resource_bar_number_color
+	) {
 
-			client.getProfiler().push(identifier_string + "_number");
+		int displayed_current_value = (int) Math.round(current_value);
+		int displayed_max_value = (int) Math.round(max_value);
+		int displayed_current_unreserved_value = (int) Math.round(current_unreserved_value);
+		String resourceBarNumberString = show_max_value ? (current_unreserved_value < max_value ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
+		int resourceBarNumberX = origin_x - (textRenderer.getWidth(resourceBarNumberString) / 2) + number_offset_x;
+		int resourceBarNumberY = origin_y + number_offset_y;
 
-			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
-			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
-			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
-			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
-			context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
+		client.getProfiler().push(identifier_string + "_number");
 
-			client.getProfiler().pop();
-		}
+		context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
+		context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
+		context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
+		context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
+		context.drawText(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
+
+		client.getProfiler().pop();
 	}
 
 	private static ResourceBarAPI.ResourceBarFillDirection getOppositeFillDirection(ResourceBarAPI.ResourceBarFillDirection fillDirection) {
@@ -643,6 +819,40 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		} else {
 			return ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT;
 		}
+	}
+
+	public static MutablePair<Integer, Integer> getOriginPos(DrawContext drawContext, ResourceBarAPI.ResourceBarOrigin origin) {
+		int originX;
+		int originY;
+		if (origin == ResourceBarAPI.ResourceBarOrigin.TOP_MIDDLE) {
+			originX = drawContext.getScaledWindowWidth() / 2;
+			originY = 0;
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.TOP_RIGHT) {
+			originX = drawContext.getScaledWindowWidth();
+			originY = 0;
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_LEFT) {
+			originX = 0;
+			originY = drawContext.getScaledWindowHeight() / 2;
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_MIDDLE) {
+			originX = drawContext.getScaledWindowWidth() / 2;
+			originY = drawContext.getScaledWindowHeight() / 2;
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_RIGHT) {
+			originX = drawContext.getScaledWindowWidth();
+			originY = drawContext.getScaledWindowHeight() / 2;
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_LEFT) {
+			originX = 0;
+			originY = drawContext.getScaledWindowHeight();
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_MIDDLE) {
+			originX = drawContext.getScaledWindowWidth() / 2;
+			originY = drawContext.getScaledWindowHeight();
+		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_RIGHT) {
+			originX = drawContext.getScaledWindowWidth();
+			originY = drawContext.getScaledWindowHeight();
+		} else {
+			originX = 0;
+			originY = 0;
+		}
+		return new MutablePair<>(originX, originY);
 	}
 
 	private static void drawResourceBarDynamicFourDirectionalLayer(
