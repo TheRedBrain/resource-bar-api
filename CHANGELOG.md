@@ -1,3 +1,7 @@
+# 3.0.0
+
+- updated to 1.21.10
+
 # 2.7.0
 
 - added icon resource bars, similar to the vanilla resource bars. This first iteration does not support multiple icon types per bar yet (eg absorption hearts). This will (hopefully) be implemented at a later stage.
