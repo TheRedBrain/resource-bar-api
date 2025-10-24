@@ -8,6 +8,9 @@ import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -23,7 +26,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
 
-		HudRenderCallback.EVENT.register((matrixStack, delta) -> {
+		HudElementRegistry.attachElementAfter(VanillaHudElements.HEALTH_BAR, ResourceBarAPITest.identifier("test"), ((matrixStack, delta) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			PlayerEntity playerEntity = minecraftClient.player;
 			if (playerEntity != null && !minecraftClient.options.hudHidden) {
@@ -151,7 +154,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 					}
 				}
 			}
-		});
+		}));
 		ConfigApi.event().onUpdateClient((identifier, config) -> {
 			if (identifier.equals(Identifier.of(ResourceBarAPITest.MOD_ID, "client"))) {
 				ResourceBarAPIClient.clearCache(
