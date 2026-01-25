@@ -3,17 +3,16 @@ package com.github.theredbrain.resourcebarapi_test;
 import com.github.theredbrain.resourcebarapi.ResourceBarAPI;
 import com.github.theredbrain.resourcebarapi.ResourceBarAPIClient;
 import com.github.theredbrain.resourcebarapi_test.config.ClientConfig;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
@@ -27,9 +26,9 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 		clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
 
 		HudElementRegistry.attachElementAfter(VanillaHudElements.HEALTH_BAR, ResourceBarAPITest.identifier("test"), ((matrixStack, delta) -> {
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			PlayerEntity playerEntity = minecraftClient.player;
-			if (playerEntity != null && !minecraftClient.options.hudHidden) {
+			Minecraft minecraftClient = Minecraft.getInstance();
+			Player playerEntity = Minecraft.getInstance().player;
+			if (playerEntity != null && !minecraftClient.options.hideGui) {
 				int currentValue = clientConfig.current_value;
 				int maxValue = clientConfig.max_value;
 				int unreservedValue = clientConfig.current_unreserved_value;
@@ -45,9 +44,9 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 								RESOURCE_BAR_IDENTIFIER_STRING,
 								currentValue,
 								maxValue,
-								Identifier.ofVanilla("hud/heart/container"),
-								Identifier.ofVanilla("hud/heart/full"),
-								Identifier.ofVanilla("hud/heart/half"),
+								ResourceLocation.withDefaultNamespace("hud/heart/container"),
+								ResourceLocation.withDefaultNamespace("hud/heart/full"),
+								ResourceLocation.withDefaultNamespace("hud/heart/half"),
 								new ArrayList<>(),
 								new ArrayList<>(),
 								originPos.getLeft(),
@@ -81,14 +80,14 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 										16,
 										16
 								},
-								new Identifier[]{
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
-										Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
+								new ResourceLocation[]{
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
+										ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
 										null
 								},
 								currentValue,
@@ -138,7 +137,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 					if (clientConfig.show_number && (currentValue < maxValue || clientConfig.show_full_resource_bar)) {
 						ResourceBarAPIClient.drawResourceNumber(
 								minecraftClient,
-								minecraftClient.textRenderer,
+								minecraftClient.font,
 								matrixStack,
 								RESOURCE_BAR_IDENTIFIER_STRING,
 								currentValue,
@@ -156,7 +155,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 			}
 		}));
 		ConfigApi.event().onUpdateClient((identifier, config) -> {
-			if (identifier.equals(Identifier.of(ResourceBarAPITest.MOD_ID, "client"))) {
+			if (identifier.equals(ResourceLocation.fromNamespaceAndPath(ResourceBarAPITest.MOD_ID, "client"))) {
 				ResourceBarAPIClient.clearCache(
 						RESOURCE_BAR_IDENTIFIER_STRING,
 						new double[]{
@@ -176,14 +175,14 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 								16,
 								16
 						},
-						new Identifier[]{
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
-								Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
+						new ResourceLocation[]{
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"),
+								ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"),
 								null
 						});
 			}

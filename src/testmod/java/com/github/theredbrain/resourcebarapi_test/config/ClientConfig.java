@@ -6,8 +6,7 @@ import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.ResourceLocation;
 import java.util.HashMap;
 
 public class ClientConfig extends Config {
@@ -48,8 +47,8 @@ public class ClientConfig extends Config {
 		put(0, 182);
 	}}, new ValidatedInt(), new ValidatedInt());
 
-	public ValidatedMap<Integer, Identifier> background_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"));
+	public ValidatedMap<Integer, ResourceLocation> background_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_background.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
 	public int progress_offset_x = 0;
@@ -62,20 +61,20 @@ public class ClientConfig extends Config {
 		put(0, 182);
 	}}, new ValidatedInt(), new ValidatedInt());
 
-	public ValidatedMap<Integer, Identifier> progress_decrease_animation_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"));
+	public ValidatedMap<Integer, ResourceLocation> progress_decrease_animation_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_decrease_animation.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
-	public ValidatedMap<Integer, Identifier> progress_increase_animation_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"));
+	public ValidatedMap<Integer, ResourceLocation> progress_increase_animation_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_animation.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
-	public ValidatedMap<Integer, Identifier> progress_increase_value_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"));
+	public ValidatedMap<Integer, ResourceLocation> progress_increase_value_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress_increase_value.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
-	public ValidatedMap<Integer, Identifier> progress_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"));
+	public ValidatedMap<Integer, ResourceLocation> progress_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_progress.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
 	public int reserved_offset_x = 0;
@@ -88,8 +87,8 @@ public class ClientConfig extends Config {
 		put(0, 182);
 	}}, new ValidatedInt(), new ValidatedInt());
 
-	public ValidatedMap<Integer, Identifier> reserved_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"));
+	public ValidatedMap<Integer, ResourceLocation> reserved_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_reserved.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
 	public boolean show_current_value_overlay = false;
@@ -103,8 +102,8 @@ public class ClientConfig extends Config {
 		put(0, 5);
 	}}, new ValidatedInt(), new ValidatedInt());
 
-	public ValidatedMap<Integer, Identifier> overlay_texture_ids = new ValidatedMap<>(new HashMap<>() {{
-		put(0, Identifier.of("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"));
+	public ValidatedMap<Integer, ResourceLocation> overlay_texture_ids = new ValidatedMap<>(new HashMap<>() {{
+		put(0, ResourceLocation.fromNamespaceAndPath("resourcebarapi_test", "textures/gui/sprites/hud/horizontal_stamina_overlay.png"));
 	}}, new ValidatedInt(), new ValidatedIdentifier());
 
 	public boolean show_icon = false;
@@ -118,7 +117,7 @@ public class ClientConfig extends Config {
 		put(0, 16);
 	}}, new ValidatedInt(), new ValidatedInt());
 
-	public ValidatedMap<Integer, Identifier> icon_texture_ids = new ValidatedMap<>(new HashMap<>() {
+	public ValidatedMap<Integer, ResourceLocation> icon_texture_ids = new ValidatedMap<>(new HashMap<>() {
 	}, new ValidatedInt(), new ValidatedIdentifier());
 
 	public boolean enable_smooth_animation = true;

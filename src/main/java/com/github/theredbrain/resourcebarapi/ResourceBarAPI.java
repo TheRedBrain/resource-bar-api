@@ -4,8 +4,7 @@ import com.github.theredbrain.resourcebarapi.config.ServerConfig;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import net.fabricmc.api.ModInitializer;
-
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +19,8 @@ public class ResourceBarAPI implements ModInitializer {
 		SERVER_CONFIG = ConfigApiJava.registerAndLoadConfig(ServerConfig::new);
 	}
 
-	public static Identifier identifier(String path) {
-		return Identifier.of(MOD_ID, path);
+	public static ResourceLocation identifier(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 	public enum ResourceBarFillDirection {
@@ -61,8 +60,8 @@ public class ResourceBarAPI implements ModInitializer {
 	public record AdditionalIconType(
 			double current_value,
 			double max_value,
-			Identifier container_texture_id,
-			Identifier full_texture_id,
-			Identifier half_texture_id
+			ResourceLocation container_texture_id,
+			ResourceLocation full_texture_id,
+			ResourceLocation half_texture_id
 	) {}
 }
