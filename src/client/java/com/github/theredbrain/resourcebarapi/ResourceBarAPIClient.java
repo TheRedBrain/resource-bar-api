@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	private static final int CACHED_TEXTURE_ID_ARRAY_LENGTH = 8;
 
 	public static Map<String, double[]> CACHED_RESOURCE_BAR_VALUES = new HashMap<>();
-	public static Map<String, ResourceLocation[]> CACHED_RESOURCE_BAR_TEXTURE_IDS = new HashMap<>();
+	public static Map<String, Identifier[]> CACHED_RESOURCE_BAR_TEXTURE_IDS = new HashMap<>();
 
 	@Override
 	public void onInitializeClient() {
 	}
 
-	public static void clearCache(String identifier_string, double[] cached_values_default, ResourceLocation[] cached_textures_default) {
+	public static void clearCache(String identifier_string, double[] cached_values_default, Identifier[] cached_textures_default) {
 		CACHED_RESOURCE_BAR_VALUES.put(identifier_string, cached_values_default);
 		CACHED_RESOURCE_BAR_TEXTURE_IDS.put(identifier_string, cached_textures_default);
 	}
@@ -37,9 +37,9 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			String identifier_string,
 			double current_value,
 			double max_value,
-			ResourceLocation container_texture_id,
-			ResourceLocation full_texture_id,
-			ResourceLocation half_texture_id,
+			Identifier container_texture_id,
+			Identifier full_texture_id,
+			Identifier half_texture_id,
 			List<ResourceBarAPI.AdditionalIconType> additional_affix_values,
 			List<ResourceBarAPI.AdditionalIconType> additional_prefix_values,
 			int origin_x,
@@ -198,7 +198,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			GuiGraphics context,
 			String identifier_string,
 			double[] cached_values_default,
-			ResourceLocation[] cached_texture_ids_default,
+			Identifier[] cached_texture_ids_default,
 			double current_value,
 			double max_value,
 			int current_value_reduction,
@@ -212,32 +212,32 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
 			ValidatedMap<Integer, Integer> background_texture_heights,
 			ValidatedMap<Integer, Integer> background_texture_widths,
-			ValidatedMap<Integer, ResourceLocation> background_texture_ids,
+			ValidatedMap<Integer, Identifier> background_texture_ids,
 			int progress_offset_x,
 			int progress_offset_y,
 			ValidatedMap<Integer, Integer> progress_texture_heights,
 			ValidatedMap<Integer, Integer> progress_texture_widths,
-			ValidatedMap<Integer, ResourceLocation> progress_decrease_animation_texture_ids,
-			ValidatedMap<Integer, ResourceLocation> progress_increase_animation_texture_ids,
-			ValidatedMap<Integer, ResourceLocation> progress_increase_value_texture_ids,
-			ValidatedMap<Integer, ResourceLocation> progress_texture_ids,
+			ValidatedMap<Integer, Identifier> progress_decrease_animation_texture_ids,
+			ValidatedMap<Integer, Identifier> progress_increase_animation_texture_ids,
+			ValidatedMap<Integer, Identifier> progress_increase_value_texture_ids,
+			ValidatedMap<Integer, Identifier> progress_texture_ids,
 			int reserved_offset_x,
 			int reserved_offset_y,
 			ValidatedMap<Integer, Integer> reserved_texture_heights,
 			ValidatedMap<Integer, Integer> reserved_texture_widths,
-			ValidatedMap<Integer, ResourceLocation> reserved_texture_ids,
+			ValidatedMap<Integer, Identifier> reserved_texture_ids,
 			boolean show_current_value_overlay,
 			int overlay_offset_x,
 			int overlay_offset_y,
 			ValidatedMap<Integer, Integer> overlay_texture_heights,
 			ValidatedMap<Integer, Integer> overlay_texture_widths,
-			ValidatedMap<Integer, ResourceLocation> overlay_texture_ids,
+			ValidatedMap<Integer, Identifier> overlay_texture_ids,
 			boolean show_icon,
 			int icon_offset_x,
 			int icon_offset_y,
 			ValidatedMap<Integer, Integer> icon_texture_heights,
 			ValidatedMap<Integer, Integer> icon_texture_widths,
-			ValidatedMap<Integer, ResourceLocation> icon_texture_ids,
+			ValidatedMap<Integer, Identifier> icon_texture_ids,
 			boolean enable_smooth_animation,
 			int animation_interval,
 			boolean max_value_change_is_animated
@@ -265,7 +265,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			cachedValues = cached_values_default;
 		}
 
-		ResourceLocation[] cachedTextureIds = CACHED_RESOURCE_BAR_TEXTURE_IDS.getOrDefault(identifier_string, cached_texture_ids_default);
+		Identifier[] cachedTextureIds = CACHED_RESOURCE_BAR_TEXTURE_IDS.getOrDefault(identifier_string, cached_texture_ids_default);
 		if (cachedTextureIds.length != CACHED_TEXTURE_ID_ARRAY_LENGTH) {
 			cachedTextureIds = cached_texture_ids_default;
 		}
@@ -286,14 +286,14 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		int icon_texture_height = (int) cachedValues[13];
 		int icon_texture_width = (int) cachedValues[14];
 
-		ResourceLocation background_texture_id = cachedTextureIds[0];
-		ResourceLocation progress_decrease_animation_texture_id = cachedTextureIds[1];
-		ResourceLocation progress_increase_animation_texture_id = cachedTextureIds[2];
-		ResourceLocation progress_increase_value_texture_id = cachedTextureIds[3];
-		ResourceLocation progress_texture_id = cachedTextureIds[4];
-		ResourceLocation reserved_texture_id = cachedTextureIds[5];
-		ResourceLocation overlay_texture_id = cachedTextureIds[6];
-		ResourceLocation icon_texture_id = cachedTextureIds[7];
+		Identifier background_texture_id = cachedTextureIds[0];
+		Identifier progress_decrease_animation_texture_id = cachedTextureIds[1];
+		Identifier progress_increase_animation_texture_id = cachedTextureIds[2];
+		Identifier progress_increase_value_texture_id = cachedTextureIds[3];
+		Identifier progress_texture_id = cachedTextureIds[4];
+		Identifier reserved_texture_id = cachedTextureIds[5];
+		Identifier overlay_texture_id = cachedTextureIds[6];
+		Identifier icon_texture_id = cachedTextureIds[7];
 
 		boolean recalculate_cache = false;
 
@@ -527,7 +527,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				icon_texture_width
 		});
 
-		CACHED_RESOURCE_BAR_TEXTURE_IDS.put(identifier_string, new ResourceLocation[]{
+		CACHED_RESOURCE_BAR_TEXTURE_IDS.put(identifier_string, new Identifier[]{
 				background_texture_id,
 				progress_decrease_animation_texture_id,
 				progress_increase_animation_texture_id,
@@ -810,7 +810,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	private static void drawResourceBarDynamicFourDirectionalLayer(
 			Minecraft client,
 			GuiGraphics context,
-			ResourceLocation texture_id,
+			Identifier texture_id,
 			String identifier_string,
 			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
 			int layer_x,
