@@ -56,7 +56,7 @@ public class ResourceBarAPI implements ModInitializer {
 		}
 	}
 
-	@Deprecated(forRemoval = true)
+	@Deprecated
 	public record AdditionalIconType(
 			double current_value,
 			double max_value,
