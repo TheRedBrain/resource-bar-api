@@ -19,7 +19,8 @@ public class ClientConfig extends Config {
 	public int current_value = 5;
 	public int max_value = 10;
 	public int current_value_reduction = 0;
-	public int current_unreserved_value = 2;
+	public int current_unreserved_value = 8;
+	public int absorption_value = 2;
 
 	public ResourceBarAPI.ResourceBarDisplay resource_bar_display = ResourceBarAPI.ResourceBarDisplay.NONE;
 
@@ -28,7 +29,6 @@ public class ClientConfig extends Config {
 	public int icon_bar_offset_x = 0;
 	public int icon_bar_offset_y = 0;
 	public boolean reverse_stack_direction = true;
-	public boolean reverse_single_bar_fill_direction = true;
 	public int max_icon_amount_per_bar = 10;
 
 	public ValidatedMap<Integer, Integer> offsets_x = new ValidatedMap<>(new HashMap<>() {{

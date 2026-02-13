@@ -1,3 +1,10 @@
+# 3.2.0
+
+## Changes
+
+- reworked icon resource bars to support multiple icon types per resource bar
+  - the old API method was deprecated
+
 # 3.1.0
 
 - updated to 1.21.11

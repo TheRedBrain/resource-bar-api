@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		CACHED_RESOURCE_BAR_TEXTURE_IDS.put(identifier_string, cached_textures_default);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void drawIconResourceBar(
 			Minecraft client,
 			GuiGraphics context,
@@ -193,6 +195,133 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		}
 	}
 
+	public static void drawIconResourceBar(
+			GuiGraphics context,
+			List<ResourceBarAPI.ResourceBarIconType> icon_types,
+			int origin_x,
+			int origin_y,
+			int offset_x,
+			int offset_y,
+			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
+			boolean reverse_stack_direction,
+			int max_icon_amount_per_bar
+	) {
+
+		double maxValue = 0;
+		for (ResourceBarAPI.ResourceBarIconType resourceBarIconType : icon_types) {
+			maxValue += resourceBarIconType.max_value();
+		}
+		if (maxValue != 0) {
+
+			// global values
+			int bar_y = origin_y + offset_y;
+			int bar_x = origin_x + offset_x;
+			boolean firstIconType = true;
+
+			// global values depending on resource_bar_fill_direction
+			boolean rotateStackAndFillAxis;
+			int currentStackAxisPosition;
+			int fillAxisStartingPosition;
+			int fillAxisIterationMultiplier;
+			int currentFillAxisPositionOffset;
+
+			if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
+				rotateStackAndFillAxis = false;
+				currentStackAxisPosition = bar_y;
+				fillAxisStartingPosition = bar_x;
+				fillAxisIterationMultiplier = -8;
+				currentFillAxisPositionOffset = -9;
+
+			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
+				rotateStackAndFillAxis = true;
+				currentStackAxisPosition = bar_x;
+				fillAxisStartingPosition = bar_y;
+				fillAxisIterationMultiplier = 8;
+				currentFillAxisPositionOffset = 0;
+
+			} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
+				rotateStackAndFillAxis = true;
+				currentStackAxisPosition = bar_x;
+				fillAxisStartingPosition = bar_y;
+				fillAxisIterationMultiplier = -8;
+				currentFillAxisPositionOffset = -9;
+			} else {
+				rotateStackAndFillAxis = false;
+				currentStackAxisPosition = bar_y;
+				fillAxisStartingPosition = bar_x;
+				fillAxisIterationMultiplier = 8;
+				currentFillAxisPositionOffset = 0;
+			}
+
+			// local variables per icon type (reset when icon type uses a new line)
+			int iconsInAdditionalBarsOffset = 0;
+			int iconsInAdditionalStacksOffset = 0;
+			int fillAxisIteratorStart = 0;
+			boolean continueLastBar = false;
+			int remainingIconAmount;
+
+			for (ResourceBarAPI.ResourceBarIconType resourceBarIconType : icon_types) {
+
+				remainingIconAmount = Mth.ceil(resourceBarIconType.max_value() / 2.0);
+
+				if (firstIconType) {
+					firstIconType = false;
+				} else {
+					if (resourceBarIconType.continuationType() == ResourceBarAPI.ContinuationType.NEW_LINE) {
+						fillAxisIteratorStart = 0;
+						iconsInAdditionalBarsOffset = iconsInAdditionalStacksOffset;
+					} else if (continueLastBar) {
+
+						if (reverse_stack_direction) {
+							currentStackAxisPosition += 10;
+						} else {
+							currentStackAxisPosition -= 10;
+						}
+						iconsInAdditionalBarsOffset -= max_icon_amount_per_bar;
+					} else {
+						iconsInAdditionalBarsOffset = iconsInAdditionalStacksOffset;
+
+					}
+					continueLastBar = false;
+				}
+
+				while (remainingIconAmount > 0) {
+					int currentBarIconAmount = Math.min(remainingIconAmount, max_icon_amount_per_bar - fillAxisIteratorStart);
+					remainingIconAmount -= currentBarIconAmount;
+
+					for (int p = fillAxisIteratorStart; p < currentBarIconAmount + fillAxisIteratorStart; ++p) {
+						int currentFillAxisPosition = fillAxisStartingPosition + (p * fillAxisIterationMultiplier) + currentFillAxisPositionOffset;
+						int currentValueCheck = (int) (resourceBarIconType.current_value() + iconsInAdditionalStacksOffset * 2);
+						int iterativeValue = p * 2 + 1 + iconsInAdditionalBarsOffset * 2;
+
+						context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.container_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+						if (iterativeValue < currentValueCheck) {
+							context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.full_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+						} else if (iterativeValue == currentValueCheck) {
+							context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.half_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+						}
+					}
+
+					if (currentBarIconAmount < max_icon_amount_per_bar - fillAxisIteratorStart) {
+						fillAxisIteratorStart = currentBarIconAmount;
+						continueLastBar = true;
+					} else {
+						fillAxisIteratorStart = 0;
+						continueLastBar = false;
+					}
+
+					if (reverse_stack_direction) {
+						currentStackAxisPosition -= 10;
+					} else {
+						currentStackAxisPosition += 10;
+					}
+					iconsInAdditionalBarsOffset += max_icon_amount_per_bar;
+				}
+				iconsInAdditionalStacksOffset += Mth.ceil(resourceBarIconType.max_value() / 2.0);
+			}
+		}
+	}
+
 	public static void drawSmoothResourceBar(
 			Minecraft client,
 			GuiGraphics context,
@@ -251,7 +380,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		}
 		if (cached_texture_ids_default.length != CACHED_TEXTURE_ID_ARRAY_LENGTH) {
 			if (ResourceBarAPI.SERVER_CONFIG.show_debug_log) {
-				ResourceBarAPI.LOGGER.info("wrong default cached values array length, needs to be " + CACHED_TEXTURE_ID_ARRAY_LENGTH + ", is: " + cached_texture_ids_default.length);
+				ResourceBarAPI.LOGGER.info("wrong default cached texture ids array length, needs to be " + CACHED_TEXTURE_ID_ARRAY_LENGTH + ", is: " + cached_texture_ids_default.length);
 			}
 			return;
 		}

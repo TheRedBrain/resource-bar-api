@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResourceBarAPITestClient implements ClientModInitializer {
 	public static ClientConfig clientConfig;
@@ -31,30 +32,49 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 				int currentValue = clientConfig.current_value;
 				int maxValue = clientConfig.max_value;
 				int unreservedValue = clientConfig.current_unreserved_value;
+				int absorptionValue = clientConfig.absorption_value;
 
-				if (!playerEntity.isCreative() && maxValue > 0) {
+				if (!playerEntity.isCreative() && maxValue + absorptionValue > 0) {
 
 					MutablePair<Integer, Integer> originPos = ResourceBarAPIClient.getOriginPos(matrixStack, clientConfig.origin);
 
 					if (clientConfig.resource_bar_display == ResourceBarAPI.ResourceBarDisplay.ICON && (currentValue < maxValue || clientConfig.show_full_resource_bar)) {
-						ResourceBarAPIClient.drawIconResourceBar(
-								minecraftClient,
-								matrixStack,
-								RESOURCE_BAR_IDENTIFIER_STRING,
+						List<ResourceBarAPI.ResourceBarIconType> list = new ArrayList<>();
+						list.add(new ResourceBarAPI.ResourceBarIconType(
 								currentValue,
-								maxValue,
+								unreservedValue,
 								Identifier.withDefaultNamespace("hud/heart/container"),
 								Identifier.withDefaultNamespace("hud/heart/full"),
 								Identifier.withDefaultNamespace("hud/heart/half"),
-								new ArrayList<>(),
-								new ArrayList<>(),
+								ResourceBarAPI.ContinuationType.NEW_ICON
+						));
+						// reserved value
+						list.add(new ResourceBarAPI.ResourceBarIconType(
+								maxValue - unreservedValue,
+								maxValue - unreservedValue,
+								Identifier.withDefaultNamespace("hud/heart/container_blinking"),
+								Identifier.withDefaultNamespace("hud/heart/full_blinking"),
+								Identifier.withDefaultNamespace("hud/heart/half_blinking"),
+								ResourceBarAPI.ContinuationType.NEW_ICON
+						));
+						// absorption value
+						list.add(new ResourceBarAPI.ResourceBarIconType(
+								absorptionValue,
+								absorptionValue,
+								Identifier.withDefaultNamespace("hud/heart/container"),
+								Identifier.withDefaultNamespace("hud/heart/absorbing_full"),
+								Identifier.withDefaultNamespace("hud/heart/absorbing_half"),
+								ResourceBarAPI.ContinuationType.NEW_LINE
+						));
+						ResourceBarAPIClient.drawIconResourceBar(
+								matrixStack,
+								list,
 								originPos.getLeft(),
 								originPos.getRight(),
 								clientConfig.icon_bar_offset_x,
 								clientConfig.icon_bar_offset_y,
 								clientConfig.fill_direction,
 								clientConfig.reverse_stack_direction,
-//								clientConfig.reverse_single_bar_fill_direction,
 								clientConfig.max_icon_amount_per_bar
 						);
 					} else if (clientConfig.resource_bar_display == ResourceBarAPI.ResourceBarDisplay.SMOOTH && (currentValue < maxValue || clientConfig.show_full_resource_bar)) {

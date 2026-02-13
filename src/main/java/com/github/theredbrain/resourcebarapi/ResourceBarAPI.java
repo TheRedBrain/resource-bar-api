@@ -56,6 +56,7 @@ public class ResourceBarAPI implements ModInitializer {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public record AdditionalIconType(
 			double current_value,
 			double max_value,
@@ -63,5 +64,20 @@ public class ResourceBarAPI implements ModInitializer {
 			Identifier full_texture_id,
 			Identifier half_texture_id
 	) {
+	}
+
+	public record ResourceBarIconType(
+			double current_value,
+			double max_value,
+			Identifier container_texture_id,
+			Identifier full_texture_id,
+			Identifier half_texture_id,
+			ContinuationType continuationType
+	) {
+	}
+
+	public enum ContinuationType {
+		NEW_LINE,
+		NEW_ICON;
 	}
 }
