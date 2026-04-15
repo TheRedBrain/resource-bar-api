@@ -4,7 +4,7 @@ import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -34,8 +34,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 
 	@Deprecated(forRemoval = true)
 	public static void drawIconResourceBar(
-			Minecraft client,
-			GuiGraphics context,
+			Minecraft minecraft,
+			GuiGraphicsExtractor guiGraphicsExtractor,
 			String identifier_string,
 			double current_value,
 			double max_value,
@@ -84,13 +84,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					for (int p = 0; p < o; ++p) {
 						int q = bar_x + p * 8;
 
-						context.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, q, m, 9, 9);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, q, m, 9, 9);
 						if (p * 2 + 1 + n < current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, q, m, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, q, m, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, q, m, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, q, m, 9, 9);
 						}
 					}
 
@@ -114,13 +114,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					for (int p = 0; p < o; ++p) {
 						int q = bar_x - p * 8 - 9;
 
-						context.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, q, m, 9, 9);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, q, m, 9, 9);
 						if (p * 2 + 1 + n < current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, q, m, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, q, m, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, q, m, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, q, m, 9, 9);
 						}
 					}
 
@@ -144,13 +144,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					for (int p = 0; p < o; ++p) {
 						int q = bar_y + p * 8;
 
-						context.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, n, q, 9, 9);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, n, q, 9, 9);
 						if (p * 2 + 1 + m < current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, n, q, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, n, q, 9, 9);
 						}
 
 						if (p * 2 + 1 + m == current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, n, q, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, n, q, 9, 9);
 						}
 					}
 
@@ -174,13 +174,13 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					for (int p = 0; p < o; ++p) {
 						int q = bar_y - p * 8 - 9;
 
-						context.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, n, q, 9, 9);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, container_texture_id, n, q, 9, 9);
 						if (p * 2 + 1 + m < current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, n, q, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, full_texture_id, n, q, 9, 9);
 						}
 
 						if (p * 2 + 1 + m == current_value) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, n, q, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, half_texture_id, n, q, 9, 9);
 						}
 					}
 
@@ -196,7 +196,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	}
 
 	public static void drawIconResourceBar(
-			GuiGraphics context,
+			GuiGraphicsExtractor guiGraphicsExtractor,
 			List<ResourceBarAPI.ResourceBarIconType> icon_types,
 			int origin_x,
 			int origin_y,
@@ -294,11 +294,11 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 						int currentValueCheck = (int) (resourceBarIconType.current_value() + iconsInAdditionalStacksOffset * 2);
 						int iterativeValue = p * 2 + 1 + iconsInAdditionalBarsOffset * 2;
 
-						context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.container_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.container_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
 						if (iterativeValue < currentValueCheck) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.full_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.full_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
 						} else if (iterativeValue == currentValueCheck) {
-							context.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.half_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
+							guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, resourceBarIconType.half_texture_id(), rotateStackAndFillAxis ? currentStackAxisPosition : currentFillAxisPosition, rotateStackAndFillAxis ? currentFillAxisPosition : currentStackAxisPosition, 9, 9);
 						}
 					}
 
@@ -323,8 +323,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	}
 
 	public static void drawSmoothResourceBar(
-			Minecraft client,
-			GuiGraphics context,
+			Minecraft minecraft,
+			GuiGraphicsExtractor guiGraphicsExtractor,
 			String identifier_string,
 			double[] cached_values_default,
 			Identifier[] cached_texture_ids_default,
@@ -682,7 +682,7 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			}
 		} else {
 
-			context.blit(
+			guiGraphicsExtractor.blit(
 					RenderPipelines.GUI_TEXTURED,
 					background_texture_id,
 					elementX,
@@ -705,8 +705,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				// animation layer
 				if (oldNormalizedResourceRatio > 0) {
 					drawResourceBarDynamicFourDirectionalLayer(
-							client,
-							context,
+							minecraft,
+							guiGraphicsExtractor,
 							progress_decrease_animation_texture_id,
 							identifier_string + "_reduce_animation",
 							resource_bar_fill_direction,
@@ -722,8 +722,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				// current value layer
 				if (normalizedResourceRatio > 0) {
 					drawResourceBarDynamicFourDirectionalLayer(
-							client,
-							context,
+							minecraft,
+							guiGraphicsExtractor,
 							progress_texture_id,
 							identifier_string + "_reduce_value",
 							resource_bar_fill_direction,
@@ -740,8 +740,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				// current value layer
 				if (normalizedResourceRatio > 0) {
 					drawResourceBarDynamicFourDirectionalLayer(
-							client,
-							context,
+							minecraft,
+							guiGraphicsExtractor,
 							progress_increase_value_texture_id,
 							identifier_string + "_increase_value",
 							resource_bar_fill_direction,
@@ -757,8 +757,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				// animation layer
 				if (oldNormalizedResourceRatio > 0) {
 					drawResourceBarDynamicFourDirectionalLayer(
-							client,
-							context,
+							minecraft,
+							guiGraphicsExtractor,
 							progress_increase_animation_texture_id,
 							identifier_string + "_increase_animation",
 							resource_bar_fill_direction,
@@ -774,8 +774,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		} else {
 			if (normalizedResourceRatio > 0) {
 				drawResourceBarDynamicFourDirectionalLayer(
-						client,
-						context,
+						minecraft,
+						guiGraphicsExtractor,
 						progress_texture_id,
 						identifier_string + "_progress_no_animation",
 						resource_bar_fill_direction,
@@ -794,8 +794,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 			int reservedElementX = elementX + reserved_offset_x;
 			int reservedElementY = elementY + reserved_offset_y;
 			drawResourceBarDynamicFourDirectionalLayer(
-					client,
-					context,
+					minecraft,
+					guiGraphicsExtractor,
 					reserved_texture_id,
 					identifier_string + "_reserved",
 					resource_bar_fill_direction,
@@ -824,22 +824,22 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 				if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 					// 1: bottom to top
 					if (current_value > 0 && current_value < max_value) {
-						context.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
+						guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX, overlayElementY + progressBarLength - normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
 				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 					// 2: right to left
 					if (current_value > 0 && current_value < max_value) {
-						context.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
+						guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX + progressBarLength - normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
 				} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 					// 3: top to bottom
 					if (current_value > 0 && current_value < max_value) {
-						context.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
+						guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX, overlayElementY + normalizedResourceRatio, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
 				} else {
 					// 0: left to right
 					if (current_value > 0 && current_value < max_value) {
-						context.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
+						guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, overlay_texture_id, overlayElementX + normalizedResourceRatio, overlayElementY, 0, 0, overlay_texture_width, overlay_texture_height, overlay_texture_width, overlay_texture_height);
 					}
 				}
 			}
@@ -855,15 +855,15 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 					ResourceBarAPI.LOGGER.info("invalid icon texture dimensions");
 				}
 			} else {
-				context.blit(RenderPipelines.GUI_TEXTURED, icon_texture_id, origin_x + icon_offset_x, origin_y + icon_offset_y, 0, 0, icon_texture_width, icon_texture_height, icon_texture_width, icon_texture_height);
+				guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, icon_texture_id, origin_x + icon_offset_x, origin_y + icon_offset_y, 0, 0, icon_texture_width, icon_texture_height, icon_texture_width, icon_texture_height);
 			}
 		}
 	}
 
 	public static void drawResourceNumber(
-			Minecraft client,
-			Font textRenderer,
-			GuiGraphics context,
+			Minecraft minecraft,
+			Font font,
+			GuiGraphicsExtractor guiGraphicsExtractor,
 			String identifier_string,
 			double current_value,
 			double max_value,
@@ -880,14 +880,14 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		int displayed_max_value = (int) Math.round(max_value);
 		int displayed_current_unreserved_value = (int) Math.round(current_unreserved_value);
 		String resourceBarNumberString = show_max_value ? (current_unreserved_value < max_value ? displayed_current_value + "/" + displayed_current_unreserved_value + " (" + displayed_max_value + ")" : displayed_current_value + "/" + displayed_max_value) : String.valueOf(displayed_current_value);
-		int resourceBarNumberX = origin_x - (textRenderer.width(resourceBarNumberString) / 2) + number_offset_x;
+		int resourceBarNumberX = origin_x - (font.width(resourceBarNumberString) / 2) + number_offset_x;
 		int resourceBarNumberY = origin_y + number_offset_y;
 
-		context.drawString(textRenderer, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
-		context.drawString(textRenderer, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
-		context.drawString(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
-		context.drawString(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
-		context.drawString(textRenderer, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
+		guiGraphicsExtractor.text(font, resourceBarNumberString, resourceBarNumberX + 1, resourceBarNumberY, 0, false);
+		guiGraphicsExtractor.text(font, resourceBarNumberString, resourceBarNumberX - 1, resourceBarNumberY, 0, false);
+		guiGraphicsExtractor.text(font, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY + 1, 0, false);
+		guiGraphicsExtractor.text(font, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY - 1, 0, false);
+		guiGraphicsExtractor.text(font, resourceBarNumberString, resourceBarNumberX, resourceBarNumberY, resource_bar_number_color, false);
 	}
 
 	private static ResourceBarAPI.ResourceBarFillDirection getOppositeFillDirection(ResourceBarAPI.ResourceBarFillDirection fillDirection) {
@@ -902,33 +902,33 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		}
 	}
 
-	public static MutablePair<Integer, Integer> getOriginPos(GuiGraphics drawContext, ResourceBarAPI.ResourceBarOrigin origin) {
+	public static MutablePair<Integer, Integer> getOriginPos(GuiGraphicsExtractor guiGraphicsExtractor, ResourceBarAPI.ResourceBarOrigin origin) {
 		int originX;
 		int originY;
 		if (origin == ResourceBarAPI.ResourceBarOrigin.TOP_MIDDLE) {
-			originX = drawContext.guiWidth() / 2;
+			originX = guiGraphicsExtractor.guiWidth() / 2;
 			originY = 0;
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.TOP_RIGHT) {
-			originX = drawContext.guiWidth();
+			originX = guiGraphicsExtractor.guiWidth();
 			originY = 0;
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_LEFT) {
 			originX = 0;
-			originY = drawContext.guiHeight() / 2;
+			originY = guiGraphicsExtractor.guiHeight() / 2;
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_MIDDLE) {
-			originX = drawContext.guiWidth() / 2;
-			originY = drawContext.guiHeight() / 2;
+			originX = guiGraphicsExtractor.guiWidth() / 2;
+			originY = guiGraphicsExtractor.guiHeight() / 2;
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.MIDDLE_RIGHT) {
-			originX = drawContext.guiWidth();
-			originY = drawContext.guiHeight() / 2;
+			originX = guiGraphicsExtractor.guiWidth();
+			originY = guiGraphicsExtractor.guiHeight() / 2;
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_LEFT) {
 			originX = 0;
-			originY = drawContext.guiHeight();
+			originY = guiGraphicsExtractor.guiHeight();
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_MIDDLE) {
-			originX = drawContext.guiWidth() / 2;
-			originY = drawContext.guiHeight();
+			originX = guiGraphicsExtractor.guiWidth() / 2;
+			originY = guiGraphicsExtractor.guiHeight();
 		} else if (origin == ResourceBarAPI.ResourceBarOrigin.BOTTOM_RIGHT) {
-			originX = drawContext.guiWidth();
-			originY = drawContext.guiHeight();
+			originX = guiGraphicsExtractor.guiWidth();
+			originY = guiGraphicsExtractor.guiHeight();
 		} else {
 			originX = 0;
 			originY = 0;
@@ -937,8 +937,8 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 	}
 
 	private static void drawResourceBarDynamicFourDirectionalLayer(
-			Minecraft client,
-			GuiGraphics context,
+			Minecraft minecraft,
+			GuiGraphicsExtractor guiGraphicsExtractor,
 			Identifier texture_id,
 			String identifier_string,
 			ResourceBarAPI.ResourceBarFillDirection resource_bar_fill_direction,
@@ -968,22 +968,22 @@ public class ResourceBarAPIClient implements ClientModInitializer {
 		if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.BOTTOM_TO_TOP) {
 			// 1: bottom to top
 
-			context.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x, layer_y + texture_height - end_display, 0, texture_height - end_display, texture_width, end_display - start_display, texture_width, texture_height);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x, layer_y + texture_height - end_display, 0, texture_height - end_display, texture_width, end_display - start_display, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.RIGHT_TO_LEFT) {
 			// 2: right to left
 
-			context.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x + texture_width - end_display, layer_y, texture_width - end_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x + texture_width - end_display, layer_y, texture_width - end_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
 
 		} else if (resource_bar_fill_direction == ResourceBarAPI.ResourceBarFillDirection.TOP_TO_BOTTOM) {
 			// 3: top to bottom
 
-			context.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x, layer_y + start_display, 0, start_display, texture_width, end_display - start_display, texture_width, texture_height);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x, layer_y + start_display, 0, start_display, texture_width, end_display - start_display, texture_width, texture_height);
 
 		} else {
 			// 0: left to right
 
-			context.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x + start_display, layer_y, start_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, texture_id, layer_x + start_display, layer_y, start_display, 0, end_display - start_display, texture_height, texture_width, texture_height);
 
 		}
 	}

@@ -1,3 +1,7 @@
+# 4.0.0
+
+- updated to Minecraft 26.1.x
+
 # 3.2.0
 
 ## Changes

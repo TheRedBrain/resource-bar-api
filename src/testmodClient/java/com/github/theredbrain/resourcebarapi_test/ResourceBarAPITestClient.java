@@ -25,7 +25,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		clientConfig = ConfigApiJava.registerAndLoadConfig(ClientConfig::new, RegisterType.CLIENT);
 
-		HudElementRegistry.attachElementAfter(VanillaHudElements.HEALTH_BAR, ResourceBarAPITest.identifier("test"), ((matrixStack, delta) -> {
+		HudElementRegistry.attachElementAfter(VanillaHudElements.HEALTH_BAR, ResourceBarAPITest.identifier("test"), ((guiGraphicsExtractor, deltaTracker) -> {
 			Minecraft minecraftClient = Minecraft.getInstance();
 			Player playerEntity = Minecraft.getInstance().player;
 			if (playerEntity != null && !minecraftClient.options.hideGui) {
@@ -36,7 +36,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 
 				if (!playerEntity.isCreative() && maxValue + absorptionValue > 0) {
 
-					MutablePair<Integer, Integer> originPos = ResourceBarAPIClient.getOriginPos(matrixStack, clientConfig.origin);
+					MutablePair<Integer, Integer> originPos = ResourceBarAPIClient.getOriginPos(guiGraphicsExtractor, clientConfig.origin);
 
 					if (clientConfig.resource_bar_display == ResourceBarAPI.ResourceBarDisplay.ICON && (currentValue < maxValue || clientConfig.show_full_resource_bar)) {
 						List<ResourceBarAPI.ResourceBarIconType> list = new ArrayList<>();
@@ -67,7 +67,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 								ResourceBarAPI.ContinuationType.NEW_LINE
 						));
 						ResourceBarAPIClient.drawIconResourceBar(
-								matrixStack,
+								guiGraphicsExtractor,
 								list,
 								originPos.getLeft(),
 								originPos.getRight(),
@@ -80,7 +80,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 					} else if (clientConfig.resource_bar_display == ResourceBarAPI.ResourceBarDisplay.SMOOTH && (currentValue < maxValue || clientConfig.show_full_resource_bar)) {
 						ResourceBarAPIClient.drawSmoothResourceBar(
 								minecraftClient,
-								matrixStack,
+								guiGraphicsExtractor,
 								RESOURCE_BAR_IDENTIFIER_STRING,
 								new double[]{
 										-1,
@@ -157,7 +157,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 						ResourceBarAPIClient.drawResourceNumber(
 								minecraftClient,
 								minecraftClient.font,
-								matrixStack,
+								guiGraphicsExtractor,
 								RESOURCE_BAR_IDENTIFIER_STRING,
 								currentValue,
 								maxValue,
