@@ -1,6 +1,7 @@
 # 4.0.0
 
 - updated to Minecraft 26.1.x
+- removed deprecated "icon resource bar" API method
 
 # 3.2.0
 
