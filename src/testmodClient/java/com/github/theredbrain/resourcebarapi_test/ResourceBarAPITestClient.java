@@ -10,6 +10,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -28,7 +29,7 @@ public class ResourceBarAPITestClient implements ClientModInitializer {
 		HudElementRegistry.attachElementAfter(VanillaHudElements.HEALTH_BAR, ResourceBarAPITest.identifier("test"), ((guiGraphicsExtractor, deltaTracker) -> {
 			Minecraft minecraftClient = Minecraft.getInstance();
 			Player playerEntity = Minecraft.getInstance().player;
-			if (playerEntity != null && !minecraftClient.options.hideGui) {
+			if (playerEntity != null && !minecraftClient.gui.hud.isHidden()) {
 				int currentValue = clientConfig.current_value;
 				int maxValue = clientConfig.max_value;
 				int unreservedValue = clientConfig.current_unreserved_value;
